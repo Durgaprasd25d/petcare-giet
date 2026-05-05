@@ -1,0 +1,67 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-primary text-gray-900 font-sans selection:bg-amber-500 selection:text-black;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  input, select, textarea {
+    @apply text-gray-900;
+  }
+
+  /* Custom Scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-white/10 rounded-full hover:bg-amber-500/50 transition-colors;
+  }
+}
+
+@layer components {
+  .glass-card {
+    @apply bg-[#1a1008]/80 backdrop-blur-xl border border-white/10 rounded-2xl shadow-[0_8px_32px_0_rgba(0,0,0,0.3)];
+  }
+  
+  .btn-brown {
+    @apply bg-brown-gradient text-black px-6 py-2 rounded-xl font-bold hover:shadow-brown-glow transition-all duration-300 active:scale-95 flex items-center justify-center;
+  }
+  
+  .text-gradient {
+    @apply bg-brown-gradient bg-clip-text text-transparent;
+  }
+
+  .shadow-brown-glow {
+    box-shadow: 0 0 20px rgba(217, 119, 6, 0.3);
+  }
+
+  /* For mobile bottom sheets or modals */
+  .custom-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.1) transparent;
+  }
+}
+
+/* Animations */
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+  100% { transform: translateY(0px); }
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+.drop-shadow-brown {
+  filter: drop-shadow(0 0 10px rgba(217, 119, 6, 0.5));
+}
