@@ -64,7 +64,7 @@ const Booking = () => {
 
       const payload = {
         petId: bookingData.petId,
-        providerId: bookingData.serviceId.provider._id,
+        providerId: bookingData.serviceId.provider?._id || null,
         serviceType: bookingData.serviceId.category,
         date: `${bookingData.date}T${bookingData.time}`,
         amount: bookingData.serviceId.price,
@@ -177,7 +177,7 @@ const Booking = () => {
                           <h4 className="font-black text-gray-900 text-lg truncate pr-2">{svc.name}</h4>
                           <span className="font-black text-gray-900 text-xl tracking-tighter">₹{svc.price}</span>
                         </div>
-                        <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mt-0.5">Care: {svc.provider.name}</p>
+                        <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mt-0.5">Care: {svc.provider?.name || 'Platform'}</p>
                         <p className="text-xs text-gray-400 mt-3 line-clamp-2 leading-relaxed opacity-80">{svc.description}</p>
                     </div>
                   </div>
