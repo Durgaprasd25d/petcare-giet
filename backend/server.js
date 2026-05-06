@@ -2,6 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const connectDB = require('./config/db');
+const seedAdmin = require('./utils/seedAdmin');
 const { createServer } = require('http');
 const { Server } = require('socket.io');
 
@@ -30,8 +31,10 @@ const io = new Server(httpServer, {
     pingInterval: 25000
 });
 
-// Connect to Database
-connectDB();
+// Connect to Database & Seed Admin
+connectDB().then(() => {
+    seedAdmin();
+});
 
 // Middleware
 app.use(cors({
