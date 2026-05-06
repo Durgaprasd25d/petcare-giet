@@ -8,6 +8,8 @@ import Booking from './pages/Booking';
 import Profile from './pages/Profile';
 import PetProfile from './pages/PetProfile';
 import WellnessRoadmap from './pages/WellnessRoadmap';
+import AdminUsers from './pages/AdminUsers';
+import AdminServices from './pages/AdminServices';
 import FinanceHub from './pages/FinanceHub';
 import { Toaster } from 'react-hot-toast';
 import { FaMobileAlt, FaPaw } from 'react-icons/fa';
@@ -135,6 +137,8 @@ function AppContent() {
           <Route path="/add-pet" element={<Dashboard />} />
           <Route path="/pet/:petId/wellness" element={<WellnessRoadmap />} />
           <Route path="/finance" element={<FinanceHub />} />
+          <Route path="/admin/users" element={<AdminUsers />} />
+          <Route path="/admin/services" element={<AdminServices />} />
         </Routes>
       </main>
       {!shouldHideNav && <BottomNav />}

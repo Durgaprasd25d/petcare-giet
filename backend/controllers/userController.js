@@ -1,6 +1,7 @@
 const User = require('../models/User');
 const Booking = require('../models/Booking');
 const Pet = require('../models/Pet');
+const Service = require('../models/Service');
 
 // Get admin dashboard stats (Admin only)
 exports.getAdminStats = async (req, res) => {
@@ -38,8 +39,39 @@ exports.getAdminStats = async (req, res) => {
 // Get all users (Admin only)
 exports.getUsers = async (req, res) => {
     try {
-        const users = await User.find({}).select('-password');
+        const users = await User.find({}).select('-password').sort({ createdAt: -1 });
         res.json(users);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+// Toggle user suspension (Admin only)
+exports.toggleSuspension = async (req, res) => {
+    try {
+        const user = await User.findById(req.params.id);
+        if (user) {
+            if (user.role === 'Admin') {
+                return res.status(403).json({ message: 'Cannot suspend an admin account' });
+            }
+            user.isSuspended = !user.isSuspended;
+            await user.save();
+            res.json({ message: `User ${user.isSuspended ? 'suspended' : 'unsuspended'} successfully`, user });
+        } else {
+            res.status(404).json({ message: 'User not found' });
+        }
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+// Get all services for admin (Admin only)
+exports.getAdminServices = async (req, res) => {
+    try {
+        const services = await Service.find({})
+            .populate('provider', 'name email role')
+            .sort({ createdAt: -1 });
+        res.json(services);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
@@ -88,6 +120,7 @@ exports.rejectUser = async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 };
+
 // Update user profile
 exports.updateUserProfile = async (req, res) => {
     try {

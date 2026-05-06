@@ -209,7 +209,7 @@ const Dashboard = ({ staffView }) => {
       );
     }
 
-    if (user.role === 'Admin') return <AdminDashboard />;
+    if (user.role === 'Admin') return <AdminDashboard initialTab={searchParams.get('view') || 'overview'} />;
 
     if (user.role === 'Pet Owner') {
       return (

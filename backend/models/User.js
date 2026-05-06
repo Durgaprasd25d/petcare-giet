@@ -27,6 +27,7 @@ const userSchema = new mongoose.Schema({
     phoneNumber: String,
     address: String,
     specialization: String, // For Vets and Service Providers
+    isSuspended: { type: Boolean, default: false },
 }, { timestamps: true });
 
 userSchema.pre('save', async function() {

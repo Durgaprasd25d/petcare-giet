@@ -129,6 +129,10 @@ exports.login = async (req, res) => {
             return res.status(401).json({ message: 'Please verify your email first' });
         }
 
+        if (user.isSuspended) {
+            return res.status(403).json({ message: 'Your account has been suspended. Please contact support.' });
+        }
+
         if (await user.matchPassword(password)) {
             res.json({
                 _id: user._id,
