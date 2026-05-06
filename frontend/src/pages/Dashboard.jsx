@@ -84,11 +84,12 @@ const Dashboard = ({ staffView }) => {
   });
 
   useEffect(() => {
+    if (user?.role !== 'Pet Owner' || staffView) return;
     const timer = setInterval(() => {
       setCurrentSlide((prev) => (prev + 1) % slides.length);
     }, 4000);
     return () => clearInterval(timer);
-  }, [slides.length]);
+  }, [slides.length, user?.role, staffView]);
 
   useEffect(() => {
     if (user) {
@@ -312,7 +313,7 @@ const Dashboard = ({ staffView }) => {
                     </div>
                   </motion.div>
                 )) : (
-                  <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="w-full h-[220px] rounded-[48px] border-2 border-dashed border-gray-200 flex flex-col items-center justify-center gap-4 bg-gray-50/30">
+                  <motion.div key="no-pets-placeholder" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="w-full h-[220px] rounded-[48px] border-2 border-dashed border-gray-200 flex flex-col items-center justify-center gap-4 bg-gray-50/30">
                     <div className="w-14 h-14 rounded-2xl bg-white flex items-center justify-center text-[#FF9F43] shadow-md">
                       <FaPlus />
                     </div>
@@ -360,9 +361,7 @@ const Dashboard = ({ staffView }) => {
                     </div>
                   </motion.div>
                 )) : (
-                  <div className="py-14 bg-white/40 rounded-[40px] border-2 border-dashed border-gray-100 text-center">
-                    <p className="text-[10px] font-black text-gray-300 uppercase tracking-widest italic">No activity logs found</p>
-                  </div>
+                  <motion.div key="no-activity-placeholder" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="py-14 bg-white/40 rounded-[40px] border-2 border-dashed border-gray-100 text-center w-full"><p className="text-[10px] font-black text-gray-300 uppercase tracking-widest italic">No activity logs found</p></motion.div>
                 )}
               </AnimatePresence>
             </div>
@@ -583,7 +582,17 @@ const Dashboard = ({ staffView }) => {
       </div>
 
       <div className="px-6 mt-6 max-w-lg mx-auto">
-        {renderDashboard()}
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={staffView || user?.role || 'default'}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.3 }}
+          >
+            {renderDashboard()}
+          </motion.div>
+        </AnimatePresence>
       </div>
 
       <Modal

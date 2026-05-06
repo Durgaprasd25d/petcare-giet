@@ -18,7 +18,12 @@ const Modal = ({ isOpen, onClose, title, children, noScroll = false }) => {
   return (
     <AnimatePresence>
       {isOpen && (
-        <div className="fixed inset-0 z-[2000] flex items-end sm:items-center justify-center p-0 sm:p-4">
+        <motion.div 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 z-[2000] flex items-end sm:items-center justify-center p-0 sm:p-4"
+        >
           {/* Backdrop */}
           <motion.div 
             initial={{ opacity: 0 }}
@@ -52,7 +57,7 @@ const Modal = ({ isOpen, onClose, title, children, noScroll = false }) => {
               {children}
             </div>
           </motion.div>
-        </div>
+        </motion.div>
       )}
     </AnimatePresence>
   );

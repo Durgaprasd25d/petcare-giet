@@ -195,12 +195,12 @@ const AdminUsers = () => {
             ))}
           </AnimatePresence>
         ) : (
-          <div className="py-20 text-center">
+          <motion.div key="no-users-placeholder" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="py-20 text-center">
             <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center mx-auto mb-6 shadow-sm">
               <FaSearch className="text-gray-200 text-2xl" />
             </div>
             <p className="text-sm font-black text-gray-300 uppercase tracking-widest">No users found matching filters</p>
-          </div>
+          </motion.div>
         )}
       </div>
     </div>
