@@ -20,8 +20,8 @@ const app = express();
 const httpServer = createServer(app);
 const io = new Server(httpServer, {
     cors: {
-        origin: true,
-        methods: ["GET", "POST"],
+        origin: "*",
+        methods: ["GET", "POST", "PUT", "DELETE"],
         credentials: true
     }
 });
@@ -30,7 +30,11 @@ const io = new Server(httpServer, {
 connectDB();
 
 // Middleware
-app.use(cors());
+app.use(cors({
+    origin: '*',
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization']
+}));
 app.use(express.json());
 
 // Rate Limiter
