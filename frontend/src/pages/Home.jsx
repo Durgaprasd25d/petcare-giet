@@ -154,9 +154,6 @@ const Home = () => {
         </motion.div>
       </AnimatePresence>
 
-      <div className="absolute top-0 w-full px-8 py-3 flex justify-between items-center text-[10px] font-black z-[200] pointer-events-none opacity-40">
-        <span>9:41</span>
-      </div>
     </div>
   );
 };

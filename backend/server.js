@@ -1,4 +1,4 @@
-require('dotenv').config(); // Restart trigger 2
+require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const connectDB = require('./config/db');
@@ -23,7 +23,11 @@ const io = new Server(httpServer, {
         origin: "*",
         methods: ["GET", "POST", "PUT", "DELETE"],
         credentials: true
-    }
+    },
+    transports: ['websocket', 'polling'],
+    allowEIO3: true,
+    pingTimeout: 60000,
+    pingInterval: 25000
 });
 
 // Connect to Database
@@ -44,7 +48,6 @@ app.use('/api', apiLimiter);
 // Serve uploaded images as static files
 app.use('/uploads', express.static(require('path').join(__dirname, 'uploads')));
 
-
 // Socket.io context
 app.set('io', io);
 
@@ -61,7 +64,7 @@ app.use('/api/wellness', wellnessRoutes);
 app.use('/api/expenses', expenseRoutes);
 
 app.get('/', (req, res) => {
-    res.send('Pet Care API is running...');
+    res.send('Payven API is running...');
 });
 
 // Socket logic
@@ -88,5 +91,4 @@ io.on('connection', (socket) => {
 const PORT = process.env.PORT || 5000;
 httpServer.listen(PORT, '0.0.0.0', () => {
     console.log(`Server running in ${process.env.NODE_ENV} mode on port ${PORT}`);
-    console.log(`Access at: http://localhost:${PORT}`);
 });

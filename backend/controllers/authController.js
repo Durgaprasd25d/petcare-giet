@@ -25,7 +25,7 @@ exports.register = async (req, res) => {
             if (user.isVerified) {
                 return res.status(400).json({ message: 'User already exists and is verified.' });
             }
-            // Update unverified user with new OTP
+            // Update unverified user
             user.name = name;
             user.password = password;
             user.role = role;
@@ -40,22 +40,40 @@ exports.register = async (req, res) => {
                 role, 
                 otp, 
                 otpExpires,
-                isVerified: false 
+                isVerified: process.env.DISABLE_OTP === 'true' 
+            });
+        }
+
+        if (process.env.DISABLE_OTP === 'true') {
+            return res.status(201).json({
+                _id: user._id,
+                name: user.name,
+                email: user.email,
+                role: user.role,
+                isApproved: user.isApproved,
+                token: generateToken(user._id),
+                message: 'Account created successfully (OTP bypassed)'
             });
         }
 
         // Send OTP via Email
-        const message = `Your OTP for PetCare registration is: ${otp}. It is valid for 10 minutes.`;
-        await sendEmail({
-            to: user.email,
-            subject: 'PetCare - Registration OTP',
-            text: message,
-        });
-        
-        res.status(201).json({
-            message: 'OTP sent to email. Please verify to complete registration.',
-            email: user.email
-        });
+        const message = `Your OTP for Payven registration is: ${otp}. It is valid for 10 minutes.`;
+        try {
+            await sendEmail({
+                to: user.email,
+                subject: 'Payven - Registration OTP',
+                text: message,
+            });
+            
+            res.status(201).json({
+                message: 'OTP sent to email. Please verify to complete registration.',
+                email: user.email
+            });
+        } catch (error) {
+            // If email fails and it's dev, allow bypass or return error
+            console.error('Email Error:', error);
+            res.status(500).json({ message: 'Failed to send OTP. Please try again later.' });
+        }
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
@@ -106,7 +124,8 @@ exports.login = async (req, res) => {
             return res.status(401).json({ message: 'Invalid email or password' });
         }
 
-        if (!user.isVerified) {
+        // Bypass verification check if OTP is disabled
+        if (!user.isVerified && process.env.DISABLE_OTP !== 'true') {
             return res.status(401).json({ message: 'Please verify your email first' });
         }
 
