@@ -171,12 +171,34 @@ const Booking = () => {
           <FaChevronLeft />
         </button>
         <div className="text-center">
-           <h1 className="text-xl font-black text-gray-900 tracking-tight">
-             {categoryFilter === 'Veterinary' ? 'Find a Vet' : 'Book Services'}
-           </h1>
+           <h1 className="text-xl font-black text-gray-900 tracking-tight">Services</h1>
            <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Premium Pet Care</p>
         </div>
         <div className="w-11" />
+      </div>
+
+      {/* Tabs */}
+      <div className="px-6 mb-8">
+        <div className="bg-white/50 backdrop-blur-md p-1.5 rounded-[28px] flex gap-1 border border-white/50">
+           <button 
+             onClick={() => navigate('/book?type=Veterinary')}
+             className={`flex-1 h-12 rounded-[22px] text-[10px] font-black uppercase tracking-widest transition-all ${
+               categoryFilter === 'Veterinary' ? 'bg-[#FF9F43] text-white shadow-lg' : 'text-gray-400 hover:bg-white'
+             }`}
+           >
+             <FaUserMd className="inline-block mr-2 text-sm" />
+             Veterinary
+           </button>
+           <button 
+             onClick={() => navigate('/book')}
+             className={`flex-1 h-12 rounded-[22px] text-[10px] font-black uppercase tracking-widest transition-all ${
+               !categoryFilter ? 'bg-[#FF9F43] text-white shadow-lg' : 'text-gray-400 hover:bg-white'
+             }`}
+           >
+             <FaTools className="inline-block mr-2 text-sm" />
+             Other Services
+           </button>
+        </div>
       </div>
 
       <div className="px-6 space-y-8">

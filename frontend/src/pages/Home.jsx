@@ -20,7 +20,7 @@ const Home = () => {
       title: "Meet Your New Best Friend",
       sub: "Thousands of adorable pets are waiting for you.",
       image: "/assets/onboarding/cat_peeking.png",
-      tag: "Welcome to PetCare",
+      tag: "Welcome to Payven",
       translateY: "translate-y-[28%] sm:translate-y-[20%]",
       containerClass: "w-[400px] h-[400px]",
       marginBottom: "mb-[22px]"

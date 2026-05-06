@@ -5,6 +5,8 @@ import bookingReducer from './slices/bookingSlice';
 import serviceReducer from './slices/serviceSlice';
 import reviewReducer from './slices/reviewSlice';
 import notificationReducer from './slices/notificationSlice';
+import wellnessReducer from './slices/wellnessSlice';
+import expenseReducer from './slices/expenseSlice';
 
 export const store = configureStore({
   reducer: {
@@ -14,5 +16,7 @@ export const store = configureStore({
     services: serviceReducer,
     reviews: reviewReducer,
     notifications: notificationReducer,
+    wellness: wellnessReducer,
+    expenses: expenseReducer,
   },
 });

@@ -49,6 +49,9 @@ exports.getAllServices = async (req, res) => {
         let query = {};
         if (category) {
             query.category = category;
+        } else {
+            // If no category specified, return all EXCEPT Veterinary for the "Other Services" tab
+            query.category = { $ne: 'Veterinary' };
         }
         const services = await Service.find(query).populate('provider', 'name email address');
         res.json(services);

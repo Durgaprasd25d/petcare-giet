@@ -24,10 +24,14 @@ const PetProfile = () => {
   const [isDeleteModalOpen, setDeleteModalOpen] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [editForm, setEditForm] = useState({
-    name: '', species: 'Dog', breed: '', age: '', gender: 'Male', weight: '', image: ''
+    name: '', species: 'Dog', breed: '', age: '', gender: 'Male', image: ''
   });
   const [historyPage, setHistoryPage] = useState(1);
   const ITEMS_PER_PAGE = 4;
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [id]);
 
   // Fetch data if missing
   useEffect(() => {
@@ -48,7 +52,6 @@ const PetProfile = () => {
         breed: pet.breed || '',
         age: pet.age || '',
         gender: pet.gender || 'Male',
-        weight: pet.weight || '',
         image: pet.image || ''
       });
     }
@@ -117,7 +120,7 @@ const PetProfile = () => {
         {/* Top Controls */}
         <div className="absolute top-0 left-0 right-0 z-50 p-6 flex justify-between items-center">
           <button 
-            onClick={() => window.history.length > 1 ? navigate(-1) : navigate('/dashboard')} 
+            onClick={() => navigate('/dashboard')} 
             className="w-11 h-11 rounded-full bg-white/90 backdrop-blur-md flex items-center justify-center text-gray-800 shadow-lg active:scale-95 transition"
           >
             <FaChevronLeft />
@@ -165,7 +168,16 @@ const PetProfile = () => {
                 </span>
              </div>
              <h1 className="text-5xl font-black tracking-tighter leading-none mb-1">{pet.name}</h1>
-             <p className="text-sm font-bold text-white/80 tracking-wide">{pet.breed || 'Unique Breed'}</p>
+             <p className="text-sm font-bold text-white/80 tracking-wide mb-4">{pet.breed || 'Unique Breed'}</p>
+             <button 
+               onClick={() => navigate(`/pet/${id}/wellness`)}
+               className="flex items-center gap-2 bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 rounded-xl px-4 py-2.5 transition-all active:scale-95 w-fit"
+             >
+               <div className="w-5 h-5 bg-[#FF9F43] rounded-md flex items-center justify-center text-[10px]">
+                 <FaHistory size={10} />
+               </div>
+               <span className="text-[10px] font-black uppercase tracking-widest text-white">Wellness Roadmap</span>
+             </button>
           </div>
         </div>
         
@@ -174,9 +186,8 @@ const PetProfile = () => {
 
       <div className="px-6 space-y-10 relative z-20 mt-[-10px]">
         {/* Stats Row */}
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-2 gap-4">
            <StatCard icon={<FaBirthdayCake />} label="Age" value={`${pet.age || 0} yrs`} />
-           <StatCard icon={<FaWeight />} label="Weight" value={`${pet.weight || '--'} kg`} />
            <StatCard icon={<FaPaw />} label="Breed" value={pet.breed || 'Husky'} />
         </div>
 

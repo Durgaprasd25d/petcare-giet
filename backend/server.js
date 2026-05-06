@@ -1,4 +1,4 @@
-require('dotenv').config();
+require('dotenv').config(); // Restart trigger 2
 const express = require('express');
 const cors = require('cors');
 const connectDB = require('./config/db');
@@ -13,6 +13,8 @@ const serviceRoutes = require('./routes/serviceRoutes');
 const uploadRoutes = require('./routes/uploadRoutes');
 const reviewRoutes = require('./routes/reviewRoutes');
 const notificationRoutes = require('./routes/notificationRoutes');
+const wellnessRoutes = require('./routes/wellnessRoutes');
+const expenseRoutes = require('./routes/expenseRoutes');
 
 const app = express();
 const httpServer = createServer(app);
@@ -51,6 +53,8 @@ app.use('/api/services', serviceRoutes);
 app.use('/api/upload', uploadRoutes);
 app.use('/api/reviews', reviewRoutes);
 app.use('/api/notifications', notificationRoutes);
+app.use('/api/wellness', wellnessRoutes);
+app.use('/api/expenses', expenseRoutes);
 
 app.get('/', (req, res) => {
     res.send('Pet Care API is running...');
@@ -78,6 +82,7 @@ io.on('connection', (socket) => {
 });
 
 const PORT = process.env.PORT || 5000;
-httpServer.listen(PORT, () => {
+httpServer.listen(PORT, '0.0.0.0', () => {
     console.log(`Server running in ${process.env.NODE_ENV} mode on port ${PORT}`);
+    console.log(`Access at: http://localhost:${PORT}`);
 });

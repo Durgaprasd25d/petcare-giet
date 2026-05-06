@@ -71,7 +71,7 @@ const Dashboard = ({ staffView }) => {
   ];
 
   const [petForm, setPetForm] = useState({
-    name: '', species: 'Dog', breed: '', age: '', gender: 'Male', weight: '', image: ''
+    name: '', species: 'Dog', breed: '', age: '', gender: 'Male', image: ''
   });
 
   const [serviceForm, setServiceForm] = useState({
@@ -143,7 +143,7 @@ const Dashboard = ({ staffView }) => {
     e.preventDefault();
     dispatch(addPet(petForm));
     setPetModalOpen(false);
-    setPetForm({ name: '', species: 'Dog', breed: '', age: '', gender: 'Male', weight: '', image: '' });
+    setPetForm({ name: '', species: 'Dog', breed: '', age: '', gender: 'Male', image: '' });
   };
 
   const handleAddService = (e) => {
@@ -201,7 +201,7 @@ const Dashboard = ({ staffView }) => {
     if (totalPages <= 1) return null;
     return (
       <div className="flex justify-center items-center gap-4 mt-6">
-        <button 
+        <button
           disabled={currentPage === 1}
           onClick={() => setPage(p => p - 1)}
           className="w-10 h-10 rounded-full bg-white border border-gray-100 flex items-center justify-center text-gray-400 disabled:opacity-30 shadow-sm active:scale-90 transition"
@@ -209,7 +209,7 @@ const Dashboard = ({ staffView }) => {
           <FaChevronRight className="rotate-180" />
         </button>
         <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Page {currentPage} of {totalPages}</span>
-        <button 
+        <button
           disabled={currentPage === totalPages}
           onClick={() => setPage(p => p + 1)}
           className="w-10 h-10 rounded-full bg-white border border-gray-100 flex items-center justify-center text-gray-400 disabled:opacity-30 shadow-sm active:scale-90 transition"
@@ -380,7 +380,7 @@ const Dashboard = ({ staffView }) => {
                   </div>
                   <div className="text-right">
                     <span className={`text-[8px] font-black uppercase tracking-[0.2em] px-3 py-1.5 rounded-full border ${b.status === 'Completed' ? 'bg-emerald-50 text-emerald-600 border-emerald-100' :
-                        b.status === 'Accepted' ? 'bg-blue-50 text-blue-600 border-blue-100' : 'bg-amber-50 text-amber-600 border-amber-100'
+                      b.status === 'Accepted' ? 'bg-blue-50 text-blue-600 border-blue-100' : 'bg-amber-50 text-amber-600 border-amber-100'
                       }`}>
                       {b.status}
                     </span>
@@ -437,8 +437,8 @@ const Dashboard = ({ staffView }) => {
                   </div>
                   <div className="text-right">
                     <span className={`text-[8px] font-black uppercase tracking-[0.2em] px-3 py-1.5 rounded-full border ${b.status === 'Accepted' ? 'bg-emerald-50 text-emerald-600 border-emerald-100' :
-                        b.status === 'Pending' ? 'bg-amber-50 text-amber-600 border-amber-100' :
-                          b.status === 'Completed' ? 'bg-blue-50 text-blue-600 border-blue-100' : 'bg-red-50 text-red-600 border-red-100'
+                      b.status === 'Pending' ? 'bg-amber-50 text-amber-600 border-amber-100' :
+                        b.status === 'Completed' ? 'bg-blue-50 text-blue-600 border-blue-100' : 'bg-red-50 text-red-600 border-red-100'
                       }`}>
                       {b.status}
                     </span>
@@ -546,11 +546,11 @@ const Dashboard = ({ staffView }) => {
               <FaHistory />
             </div>
             <div>
-               <h4 className="font-black text-gray-900 text-sm">Pending Actions</h4>
-               <p className="text-[10px] font-bold text-gray-400 uppercase tracking-tight">{bookings.filter(b => b.status === 'Pending').length} requests waiting</p>
+              <h4 className="font-black text-gray-900 text-sm">Pending Actions</h4>
+              <p className="text-[10px] font-bold text-gray-400 uppercase tracking-tight">{bookings.filter(b => b.status === 'Pending').length} requests waiting</p>
             </div>
           </div>
-          <button 
+          <button
             onClick={() => navigate('?view=bookings')}
             className="text-[10px] font-black text-amber-600 uppercase tracking-widest border-b border-amber-200 pb-0.5"
           >
@@ -559,13 +559,13 @@ const Dashboard = ({ staffView }) => {
         </section>
 
         <section className="bg-[#FAF5F0] border-2 border-dashed border-gray-200 p-8 rounded-[45px] text-center">
-           <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center mx-auto mb-4 shadow-sm">
-              <FaStethoscope className="text-[#FF9F43] text-2xl" />
-           </div>
-           <h3 className="text-lg font-black text-gray-900 tracking-tight">Welcome back, {user.name.split(' ')[0]}!</h3>
-           <p className="text-xs font-medium text-gray-400 mt-2 leading-relaxed">
-             Everything is running smoothly. Use the navigation below to manage your schedule and services.
-           </p>
+          <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center mx-auto mb-4 shadow-sm">
+            <FaStethoscope className="text-[#FF9F43] text-2xl" />
+          </div>
+          <h3 className="text-lg font-black text-gray-900 tracking-tight">Welcome back, {user.name.split(' ')[0]}!</h3>
+          <p className="text-xs font-medium text-gray-400 mt-2 leading-relaxed">
+            Everything is running smoothly. Use the navigation below to manage your schedule and services.
+          </p>
         </section>
       </div>
     );
@@ -576,10 +576,10 @@ const Dashboard = ({ staffView }) => {
       <div className="sticky top-0 z-50 bg-[#FAF5F0]/80 backdrop-blur-xl px-6 py-6 flex justify-between items-center">
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-2">
-            <div className="w-10 h-10 bg-[#FF9F43] rounded-[14px] flex items-center justify-center text-white shadow-lg shadow-[#FF9F43]/20">
-              <FaPaw size={18} />
+            <div className="w-10 h-10 bg-[#1A1A1A] rounded-[14px] flex items-center justify-center overflow-hidden shadow-lg shadow-black/10">
+              <img src="/logo.png" className="w-full h-full object-cover" alt="Payven Logo" />
             </div>
-            <h1 className="text-2xl font-black text-gray-900 tracking-tighter">Pawlio</h1>
+            <h1 className="text-2xl font-black text-gray-900 tracking-tighter">Payven</h1>
           </div>
         </div>
         <div className="flex items-center gap-3">
