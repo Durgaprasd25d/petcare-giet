@@ -6,7 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { 
   FaWallet, FaPlus, FaTrashAlt, FaPizzaSlice, FaStethoscope, 
   FaCut, FaGamepad, FaGraduationCap, FaEllipsisH, FaChevronLeft,
-  FaCalendarAlt, FaTag, FaChartPie, FaChartLine
+  FaCalendarAlt, FaTag, FaChartPie, FaChartLine, FaChevronDown
 } from 'react-icons/fa';
 import { toast } from 'react-hot-toast';
 
@@ -21,7 +21,7 @@ const categoryIcons = {
 
 const FinanceHub = () => {
   const dispatch = useDispatch();
-  const { expenses, isLoading } = useSelector((state) => state.expenses);
+  const { expenses } = useSelector((state) => state.expenses);
   const { pets } = useSelector((state) => state.pets);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [formData, setFormData] = useState({
@@ -31,6 +31,7 @@ const FinanceHub = () => {
     description: '',
     date: new Date().toISOString().split('T')[0]
   });
+  const [activeDropdown, setActiveDropdown] = useState(null);
 
   useEffect(() => {
     dispatch(getExpenses());
@@ -49,8 +50,12 @@ const FinanceHub = () => {
     if (!formData.pet || !formData.amount) return toast.error('Please fill in Pet and Amount');
     
     try {
-      await dispatch(addExpense(formData)).unwrap();
-      toast.success('Expense logged successfully! 💰');
+      const payload = {
+        ...formData,
+        amount: Number(formData.amount)
+      };
+      await dispatch(addExpense(payload)).unwrap();
+      toast.success('Transaction secured in your vault! 💰');
       setIsAddModalOpen(false);
       setFormData({
         pet: '',
@@ -60,7 +65,7 @@ const FinanceHub = () => {
         date: new Date().toISOString().split('T')[0]
       });
     } catch (error) {
-      toast.error(error || 'Failed to add expense');
+      toast.error(error?.message || error || 'Failed to add expense');
     }
   };
 
@@ -77,18 +82,23 @@ const FinanceHub = () => {
     <div className="min-h-screen bg-[#FAF5F0] pb-24">
       {/* Header */}
       <div className="bg-white px-6 pt-12 pb-8 rounded-b-[40px] shadow-sm">
-        <div className="flex justify-between items-center mb-8">
-          <div>
-            <h1 className="text-2xl font-black text-gray-900 tracking-tight">Fin-Pet Tracker</h1>
-            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em] mt-1">Manage Pet Expenses</p>
+          <div className="flex justify-between items-center mb-8">
+            <div className="flex items-center gap-3">
+               <button onClick={() => window.history.back()} className="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center text-gray-400 active:scale-95 transition-all">
+                  <FaChevronLeft size={14} />
+               </button>
+               <div>
+                 <h1 className="text-2xl font-black text-gray-900 tracking-tight">Payven Wallet</h1>
+                 <p className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em] mt-1">Premium Finance Hub</p>
+               </div>
+            </div>
+            <button 
+              onClick={() => setIsAddModalOpen(true)}
+              className="w-12 h-12 bg-[#FF9F43] rounded-2xl flex items-center justify-center text-white shadow-lg shadow-[#FF9F43]/30 active:scale-95 transition-all"
+            >
+              <FaPlus />
+            </button>
           </div>
-          <button 
-            onClick={() => setIsAddModalOpen(true)}
-            className="w-12 h-12 bg-[#FF9F43] rounded-2xl flex items-center justify-center text-white shadow-lg shadow-[#FF9F43]/30 active:scale-95 transition-all"
-          >
-            <FaPlus />
-          </button>
-        </div>
 
         {/* Total Card */}
         <div className="bg-gradient-to-br from-[#1A1A1A] to-[#333333] rounded-[32px] p-8 text-white relative overflow-hidden shadow-2xl">
@@ -150,13 +160,13 @@ const FinanceHub = () => {
                   key={exp._id} 
                   className="bg-white p-5 rounded-[30px] shadow-sm border border-gray-50 flex items-center gap-4"
                 >
-                  <div className={`w-12 h-12 rounded-2xl flex items-center justify-center text-xl ${categoryIcons[exp.category].color}`}>
-                    {categoryIcons[exp.category].icon}
+                  <div className={`w-12 h-12 rounded-2xl flex items-center justify-center text-xl ${categoryIcons[exp.category]?.color || 'bg-gray-100'}`}>
+                    {categoryIcons[exp.category]?.icon || <FaEllipsisH />}
                   </div>
                   <div className="flex-1">
                     <h4 className="text-xs font-black text-gray-900">{exp.description}</h4>
                     <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest mt-1">
-                      {exp.pet?.name} • {new Date(exp.date).toLocaleDateString()}
+                      {exp.pet?.name || 'Unknown Pet'} • {new Date(exp.date).toLocaleDateString()}
                     </p>
                   </div>
                   <div className="text-right">
@@ -191,62 +201,125 @@ const FinanceHub = () => {
               initial={{ y: 100, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               exit={{ y: 100, opacity: 0 }}
-              className="relative w-full max-w-sm bg-white rounded-[40px] p-8 shadow-2xl"
+              className="relative w-full max-w-sm bg-white rounded-[45px] p-8 shadow-2xl overflow-visible"
             >
-              <h3 className="text-xl font-black text-gray-900 tracking-tight mb-6 text-center">New Expense</h3>
+              <div className="w-16 h-1 bg-gray-100 rounded-full mx-auto mb-6" />
+              <h3 className="text-xl font-black text-gray-900 tracking-tight mb-8 text-center">Log Transaction</h3>
               
-              <form onSubmit={handleAdd} className="space-y-4">
-                <div>
-                  <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Select Pet</label>
-                  <select 
-                    value={formData.pet}
-                    onChange={(e) => setFormData({...formData, pet: e.target.value})}
-                    className="w-full h-12 bg-gray-50 border-none rounded-2xl px-4 text-xs font-bold mt-1 focus:ring-2 focus:ring-[#FF9F43]"
+              <form onSubmit={handleAdd} className="space-y-6">
+                {/* Custom Pet Dropdown */}
+                <div className="relative">
+                  <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1 block mb-2">Select Companion</label>
+                  <button 
+                    type="button"
+                    onClick={() => setActiveDropdown(activeDropdown === 'pet' ? null : 'pet')}
+                    className="w-full h-14 bg-gray-50 rounded-2xl px-5 flex items-center justify-between group hover:bg-gray-100 transition-all border border-transparent focus:border-[#FF9F43]/30"
                   >
-                    <option value="">Choose Pet</option>
-                    {pets.map(p => <option key={p._id} value={p._id}>{p.name}</option>)}
-                  </select>
+                    <span className={`text-xs font-bold ${formData.pet ? 'text-gray-900' : 'text-gray-400'}`}>
+                      {formData.pet ? pets.find(p => p._id === formData.pet)?.name : 'Choose a pet'}
+                    </span>
+                    <FaChevronDown className={`text-gray-300 transition-transform ${activeDropdown === 'pet' ? 'rotate-180' : ''}`} size={10} />
+                  </button>
+                  
+                  <AnimatePresence>
+                    {activeDropdown === 'pet' && (
+                      <motion.div 
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: 10 }}
+                        className="absolute z-[110] left-0 right-0 top-full mt-2 bg-white rounded-2xl shadow-2xl border border-gray-50 p-2 space-y-1 max-h-48 overflow-y-auto"
+                      >
+                        {pets.length > 0 ? pets.map(p => (
+                          <button
+                            key={p._id}
+                            type="button"
+                            onClick={() => {
+                              setFormData({...formData, pet: p._id});
+                              setActiveDropdown(null);
+                            }}
+                            className="w-full h-11 px-4 rounded-xl text-left text-xs font-bold text-gray-600 hover:bg-[#FF9F43]/5 hover:text-[#FF9F43] transition-all flex items-center justify-between"
+                          >
+                            {p.name}
+                            {formData.pet === p._id && <div className="w-1.5 h-1.5 rounded-full bg-[#FF9F43]" />}
+                          </button>
+                        )) : (
+                          <p className="text-[10px] text-gray-400 p-4 text-center">No pets found</p>
+                        )}
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Category</label>
-                    <select 
-                      value={formData.category}
-                      onChange={(e) => setFormData({...formData, category: e.target.value})}
-                      className="w-full h-12 bg-gray-50 border-none rounded-2xl px-4 text-xs font-bold mt-1 focus:ring-2 focus:ring-[#FF9F43]"
+                  {/* Custom Category Dropdown */}
+                  <div className="relative">
+                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1 block mb-2">Category</label>
+                    <button 
+                      type="button"
+                      onClick={() => setActiveDropdown(activeDropdown === 'category' ? null : 'category')}
+                      className="w-full h-14 bg-gray-50 rounded-2xl px-5 flex items-center justify-between hover:bg-gray-100 transition-all border border-transparent focus:border-[#FF9F43]/30"
                     >
-                      {Object.keys(categoryIcons).map(c => <option key={c} value={c}>{c}</option>)}
-                    </select>
+                      <span className="text-xs font-bold text-gray-900">{formData.category}</span>
+                      <FaChevronDown className={`text-gray-300 transition-transform ${activeDropdown === 'category' ? 'rotate-180' : ''}`} size={10} />
+                    </button>
+                    
+                    <AnimatePresence>
+                      {activeDropdown === 'category' && (
+                        <motion.div 
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: 10 }}
+                          className="absolute z-[110] left-0 right-0 top-full mt-2 bg-white rounded-2xl shadow-2xl border border-gray-50 p-2 space-y-1"
+                        >
+                          {Object.keys(categoryIcons).map(c => (
+                            <button
+                              key={c}
+                              type="button"
+                              onClick={() => {
+                                setFormData({...formData, category: c});
+                                setActiveDropdown(null);
+                              }}
+                              className="w-full h-11 px-4 rounded-xl text-left text-xs font-bold text-gray-600 hover:bg-[#FF9F43]/5 hover:text-[#FF9F43] transition-all flex items-center gap-3"
+                            >
+                              <span className="opacity-50">{categoryIcons[c].icon}</span>
+                              {c}
+                            </button>
+                          ))}
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
                   </div>
+
                   <div>
-                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Amount (₹)</label>
+                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1 block mb-2">Amount (₹)</label>
                     <input 
                       type="number"
+                      required
                       value={formData.amount}
                       onChange={(e) => setFormData({...formData, amount: e.target.value})}
-                      className="w-full h-12 bg-gray-50 border-none rounded-2xl px-4 text-xs font-bold mt-1 focus:ring-2 focus:ring-[#FF9F43]"
-                      placeholder="0"
+                      className="w-full h-14 bg-gray-50 border-none rounded-2xl px-5 text-xs font-bold focus:ring-2 focus:ring-[#FF9F43]/20 focus:bg-white transition-all outline-none"
+                      placeholder="500"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Description</label>
+                  <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1 block mb-2">Description</label>
                   <input 
                     type="text"
+                    required
                     value={formData.description}
                     onChange={(e) => setFormData({...formData, description: e.target.value})}
-                    className="w-full h-12 bg-gray-50 border-none rounded-2xl px-4 text-xs font-bold mt-1 focus:ring-2 focus:ring-[#FF9F43]"
-                    placeholder="e.g. Premium Kibble"
+                    className="w-full h-14 bg-gray-50 border-none rounded-2xl px-5 text-xs font-bold focus:ring-2 focus:ring-[#FF9F43]/20 focus:bg-white transition-all outline-none"
+                    placeholder="Premium Kibble"
                   />
                 </div>
 
                 <button 
                   type="submit"
-                  className="w-full h-14 bg-[#FF9F43] text-white rounded-2xl font-black text-xs uppercase tracking-[0.2em] shadow-lg shadow-[#FF9F43]/20 mt-4 active:scale-95 transition-all"
+                  className="w-full h-16 bg-[#FF9F43] text-white rounded-[22px] font-black text-xs uppercase tracking-[0.2em] shadow-xl shadow-[#FF9F43]/20 mt-4 active:scale-95 transition-all flex items-center justify-center"
                 >
-                  Save Transaction
+                  Confirm Log
                 </button>
               </form>
             </motion.div>
