@@ -38,14 +38,16 @@ exports.createBooking = async (req, res) => {
 
         // Send Notification to Provider
         const io = req.app.get('io');
-        await sendNotification(
-          req, 
-          providerId, 
-          'New Booking Request 🐾', 
-          `You have a new ${serviceType} request for ${date}`, 
-          'BookingNew', 
-          booking._id
-        );
+        if (providerId) {
+          await sendNotification(
+            req, 
+            providerId, 
+            'New Booking Request 🐾', 
+            `You have a new ${serviceType} request for ${date}`, 
+            'BookingNew', 
+            booking._id
+          );
+        }
 
         if (io) {
           const populatedBooking = await Booking.findById(booking._id)
@@ -53,7 +55,9 @@ exports.createBooking = async (req, res) => {
             .populate('owner', 'name email')
             .populate('provider', 'name');
           
-          io.to(providerId.toString()).emit('bookingCreated', populatedBooking);
+          if (providerId) {
+            io.to(providerId.toString()).emit('bookingCreated', populatedBooking);
+          }
           io.to(req.user._id.toString()).emit('bookingCreated', populatedBooking);
         }
 
