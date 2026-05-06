@@ -61,7 +61,7 @@ const WellnessRoadmap = () => {
       await dispatch(updateMilestone({ petId, milestoneId, isCompleted: newStatus })).unwrap();
       
       if (newStatus) {
-        toast.success('Milestone Unlocked! 🎉', {
+        toast.success('Step Done! 🎉', {
           icon: '🏆',
           style: { borderRadius: '20px', background: '#333', color: '#fff' }
         });
@@ -73,7 +73,7 @@ const WellnessRoadmap = () => {
           colors: ['#FF9F43', '#FFFFFF', '#FFD2A0']
         });
       } else {
-        toast('Milestone reset to pending', { icon: '🔄' });
+        toast('Step reset', { icon: '🔄' });
         playClickSound();
       }
     } catch (error) {
@@ -124,7 +124,7 @@ const WellnessRoadmap = () => {
           <FaChevronLeft />
         </button>
         <div className="flex-1">
-          <h1 className="text-xl font-black text-gray-900 tracking-tight">Health Roadmap</h1>
+          <h1 className="text-xl font-black text-gray-900 tracking-tight">Health Journey</h1>
           <div className="flex items-center gap-2 mt-0.5">
             <div className="w-24 h-1.5 bg-gray-100 rounded-full overflow-hidden">
               <motion.div 
@@ -312,7 +312,7 @@ const WellnessRoadmap = () => {
                       : 'bg-[#FF9F43] text-white shadow-xl shadow-[#FF9F43]/20 active:scale-95'
                     }`}
                 >
-                  {selectedMilestone.isCompleted ? 'Mark as Pending' : 'Unlock Milestone'}
+                  {selectedMilestone.isCompleted ? 'Reset Step' : 'Complete Step'}
                 </button>
               </div>
             </motion.div>

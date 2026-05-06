@@ -114,7 +114,7 @@ function AppContent() {
           </div>
           <h1 className="text-4xl font-black text-white tracking-tighter mb-4">Experience <span className="text-[#FF9F43]">Payven</span> on Mobile</h1>
           <p className="text-gray-400 text-sm font-medium leading-relaxed mb-10">
-            Payven is meticulously crafted for a premium, high-end mobile experience. To explore the world of elite pet care, please open this site on your smartphone.
+            Payven is made for a great mobile experience. To explore the world of pet care, please open this site on your smartphone.
           </p>
           <div className="inline-flex items-center gap-3 px-6 py-3 bg-white/5 rounded-2xl border border-white/10 text-[#FF9F43]">
              <FaMobileAlt />

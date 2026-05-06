@@ -74,11 +74,11 @@ const Booking = () => {
       await axios.post(`${import.meta.env.VITE_API_URL}/bookings`, payload, config);
       
       setIsSubmitting(false);
-      alert('Booking Requested Successfully! 🎉');
+      alert('Your booking is set! 🎉');
       navigate('/dashboard');
     } catch (error) {
       setIsSubmitting(false);
-      alert(error.response?.data?.message || 'Booking Failed');
+      alert(error.response?.data?.message || 'Booking failed, try again');
     }
   }, [bookingData, user.token, navigate]);
 
@@ -113,8 +113,8 @@ const Booking = () => {
           <FaChevronLeft />
         </motion.button>
         <div className="text-center">
-           <h1 className="text-xl font-black text-gray-900 tracking-tight">Services</h1>
-           <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] opacity-60">Elite Pet Care</p>
+           <h1 className="text-xl font-black text-gray-900 tracking-tight">Booking</h1>
+           <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] opacity-60">Pet Care</p>
         </div>
         <div className="w-11" />
       </div>
@@ -128,7 +128,7 @@ const Booking = () => {
              }`}
            >
              <FaUserMd className="inline-block mr-2 text-sm" />
-             Veterinary
+             Vet
            </button>
            <button 
              onClick={() => navigate('/book')}
@@ -146,7 +146,7 @@ const Booking = () => {
         <section className="space-y-4">
           <div className="flex justify-between items-center px-1">
              <h2 className="text-[10px] font-black text-gray-400 uppercase tracking-widest opacity-80">
-               {isLoading ? 'Searching...' : `${services.length} Premium Services`}
+               {isLoading ? 'Looking...' : `${services.length} Services`}
              </h2>
           </div>
 
@@ -177,7 +177,7 @@ const Booking = () => {
                           <h4 className="font-black text-gray-900 text-lg truncate pr-2">{svc.name}</h4>
                           <span className="font-black text-gray-900 text-xl tracking-tighter">₹{svc.price}</span>
                         </div>
-                        <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mt-0.5">Vet. {svc.provider.name}</p>
+                        <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mt-0.5">Care: {svc.provider.name}</p>
                         <p className="text-xs text-gray-400 mt-3 line-clamp-2 leading-relaxed opacity-80">{svc.description}</p>
                     </div>
                   </div>
@@ -194,7 +194,7 @@ const Booking = () => {
               )) : !isLoading && (
                 <div className="py-20 text-center opacity-40">
                   <FaSearch className="mx-auto text-4xl mb-4" />
-                  <p className="text-[10px] font-black uppercase tracking-widest">No matches found</p>
+                  <p className="text-[10px] font-black uppercase tracking-widest">Nothing found</p>
                 </div>
               )}
             </AnimatePresence>
@@ -211,18 +211,18 @@ const Booking = () => {
               className="bg-white rounded-[50px] p-8 shadow-[0_-25px_80px_rgba(0,0,0,0.06)] border border-gray-50 space-y-8 will-change-transform"
             >
               <div className="flex items-center justify-between">
-                <h3 className="text-2xl font-black text-gray-900 tracking-tighter">Quick Checkout</h3>
-                <div className="bg-emerald-50 text-emerald-600 px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest">Safe & Secure</div>
+                <h3 className="text-2xl font-black text-gray-900 tracking-tighter">Checkout</h3>
+                <div className="bg-emerald-50 text-emerald-600 px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest">Secure</div>
               </div>
 
               <div className="space-y-6">
                 {/* Optimized Dropdown */}
                 <div className="space-y-2 relative" ref={dropdownRef}>
-                  <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] ml-1">Select Patient</label>
+                  <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] ml-1">My Pet</label>
                   <button
                     type="button"
                     onClick={() => setPetDropdownOpen(!isPetDropdownOpen)}
-                    className={`w-full h-18 bg-gray-50 border-2 rounded-[28px] px-6 flex items-center justify-between transition-all duration-300 outline-none ${
+                    className={`w-full h-[72px] bg-gray-50 border-2 rounded-[28px] px-6 flex items-center justify-between transition-all duration-300 outline-none ${
                       isPetDropdownOpen ? 'border-gray-900 bg-white ring-4 ring-gray-900/5' : 'border-transparent'
                     }`}
                   >
@@ -247,7 +247,7 @@ const Booking = () => {
                           </div>
                         </>
                       ) : (
-                        <span className="text-sm font-bold text-gray-300">Who are we caring for?</span>
+                        <span className="text-sm font-bold text-gray-300">Choose your pet</span>
                       )}
                     </div>
                     <FaChevronDown className={`text-gray-300 transition-transform duration-500 ${isPetDropdownOpen ? 'rotate-180 text-gray-900' : ''}`} />
@@ -270,7 +270,7 @@ const Booking = () => {
                                   setBookingData({ ...bookingData, petId: pet._id });
                                   setPetDropdownOpen(false);
                                 }}
-                                className={`w-full flex items-center justify-between p-4 rounded-[26px] transition-all duration-300 mb-1 ${
+                                className={`w-full h-[80px] flex items-center justify-between px-5 rounded-[26px] transition-all duration-300 mb-2 ${
                                   bookingData.petId === pet._id ? 'bg-gray-900 text-white shadow-xl scale-[0.98]' : 'hover:bg-gray-50'
                                 }`}
                               >
@@ -287,8 +287,8 @@ const Booking = () => {
                               </button>
                             )) : (
                               <div className="p-8 text-center">
-                                <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">No pets registered</p>
-                                <button onClick={() => navigate('/dashboard?addPet=true')} className="text-[10px] font-black text-[#FF9F43] uppercase tracking-widest mt-4 underline underline-offset-4">Register Now</button>
+                                <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">No pets added</p>
+                                <button onClick={() => navigate('/dashboard?addPet=true')} className="text-[10px] font-black text-[#FF9F43] uppercase tracking-widest mt-4 underline underline-offset-4">Add Pet</button>
                               </div>
                             )}
                          </div>
@@ -299,11 +299,11 @@ const Booking = () => {
 
                 {/* Optimized DateTime Trigger */}
                 <div className="space-y-2">
-                  <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] ml-1">Appointment Slot</label>
+                  <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] ml-1">When?</label>
                   <button
                     type="button"
                     onClick={() => setDateTimeModalOpen(true)}
-                    className="w-full h-18 bg-gray-50 border-2 border-transparent rounded-[28px] px-6 flex items-center justify-between transition-all duration-300 hover:bg-white hover:border-gray-900 group"
+                    className="w-full h-[72px] bg-gray-50 border-2 border-transparent rounded-[28px] px-6 flex items-center justify-between transition-all duration-300 hover:bg-white hover:border-gray-900 group"
                   >
                     <div className="flex items-center gap-4">
                        <div className="w-10 h-10 bg-white rounded-2xl flex items-center justify-center text-gray-900 shadow-sm border border-gray-50 group-hover:bg-gray-900 group-hover:text-white transition-all">
@@ -314,7 +314,7 @@ const Booking = () => {
                              {bookingData.date ? new Date(bookingData.date).toLocaleDateString('en-US', { day: 'numeric', month: 'short' }) : 'Pick a Date'}
                              {bookingData.time && ` @ ${bookingData.time}`}
                           </p>
-                          {!bookingData.date && <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest opacity-60">View availability</p>}
+                          {!bookingData.date && <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest opacity-60">Pick a time</p>}
                        </div>
                     </div>
                     <FaChevronRight className="text-gray-300 group-hover:text-gray-900 group-hover:translate-x-1 transition-all" />
@@ -326,8 +326,8 @@ const Booking = () => {
               <div className="pt-8 border-t border-gray-100">
                  <div className="flex justify-between items-center mb-8 px-2">
                     <div>
-                      <p className="text-[9px] font-black text-gray-400 uppercase tracking-[0.3em]">Total Amount</p>
-                      <p className="text-[10px] font-bold text-emerald-500 uppercase mt-1">Free request & pay later</p>
+                      <p className="text-[9px] font-black text-gray-400 uppercase tracking-[0.3em]">Total</p>
+                      <p className="text-[10px] font-bold text-emerald-500 uppercase mt-1">Pay later</p>
                     </div>
                     <span className="text-4xl font-black text-gray-900 tracking-tighter">₹{bookingData.serviceId.price}</span>
                  </div>
@@ -337,7 +337,7 @@ const Booking = () => {
                   whileTap={{ scale: 0.96 }}
                   onClick={handleCreateBooking}
                   disabled={!bookingData.petId || !bookingData.date || !bookingData.time || isSubmitting}
-                  className="w-full h-20 bg-gray-900 rounded-[30px] text-white text-sm font-black uppercase tracking-[0.2em] shadow-[0_20px_50px_rgba(0,0,0,0.15)] disabled:opacity-30 disabled:grayscale transition-all flex items-center justify-center gap-4 overflow-hidden relative group"
+                  className="w-full btn-premium bg-gray-900 text-white shadow-[0_20px_50px_rgba(0,0,0,0.15)] overflow-hidden relative group"
                  >
                    <AnimatePresence mode="wait">
                       {isSubmitting ? (
@@ -353,12 +353,12 @@ const Booking = () => {
                           className="flex items-center gap-4"
                         >
                           <FaPaperPlane className="group-hover:translate-x-2 group-hover:-translate-y-1 transition-transform" />
-                          <span>Request Booking</span>
+                          <span>Book Now</span>
                         </motion.div>
                       )}
                    </AnimatePresence>
                  </motion.button>
-                 <p className="text-center text-[9px] font-black text-gray-300 uppercase tracking-widest mt-6">Instant confirmation via real-time notifications</p>
+                 <p className="text-center text-[9px] font-black text-gray-300 uppercase tracking-widest mt-6">You'll hear from us soon</p>
               </div>
             </motion.div>
           )}
@@ -366,11 +366,11 @@ const Booking = () => {
       </div>
 
       {/* Optimized Slot Modal */}
-      <Modal isOpen={isDateTimeModalOpen} onClose={() => setDateTimeModalOpen(false)} title="Available Slots">
+      <Modal isOpen={isDateTimeModalOpen} onClose={() => setDateTimeModalOpen(false)} title="Select Time">
          <div className="space-y-8 py-6">
             <div className="space-y-5">
                <h4 className="text-[10px] font-black text-gray-400 uppercase tracking-widest flex items-center gap-3">
-                  <span className="w-6 h-[1px] bg-gray-200" /> Date Selection
+                  <span className="w-6 h-[1px] bg-gray-200" /> Choose Date
                </h4>
                <div className="flex gap-4 overflow-x-auto pb-4 no-scrollbar -mx-4 px-4 snap-x">
                   {dates.map((date, i) => {
@@ -396,7 +396,7 @@ const Booking = () => {
 
             <div className="space-y-5">
                <h4 className="text-[10px] font-black text-gray-400 uppercase tracking-widest flex items-center gap-3">
-                  <span className="w-6 h-[1px] bg-gray-200" /> Time Selection
+                  <span className="w-6 h-[1px] bg-gray-200" /> Choose Time
                </h4>
                <div className="grid grid-cols-4 gap-3">
                   {timeSlots.map((time, i) => {
@@ -406,7 +406,7 @@ const Booking = () => {
                         key={i}
                         whileTap={{ scale: 0.95 }}
                         onClick={() => setBookingData({ ...bookingData, time })}
-                        className={`h-14 rounded-[22px] flex items-center justify-center text-[11px] font-black transition-all duration-300 ${
+                        className={`h-[60px] rounded-[22px] flex items-center justify-center text-[11px] font-black transition-all duration-300 ${
                           isSelected ? 'bg-gray-900 text-white shadow-xl' : 'bg-gray-50 text-gray-900 hover:bg-white'
                         }`}
                       >
@@ -419,7 +419,7 @@ const Booking = () => {
 
             <button
                onClick={() => setDateTimeModalOpen(false)}
-               className="w-full h-18 bg-gray-900 rounded-[28px] text-white text-[11px] font-black uppercase tracking-widest shadow-2xl active:scale-95 transition-all mt-6"
+               className="w-full btn-premium bg-gray-900 text-white shadow-2xl mt-6"
                disabled={!bookingData.date || !bookingData.time}
             >
                Confirm Selection

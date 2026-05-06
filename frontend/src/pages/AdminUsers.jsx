@@ -87,8 +87,8 @@ const AdminUsers = () => {
             <FaChevronLeft size={12} />
           </motion.button>
           <div>
-            <h1 className="text-2xl font-black text-gray-900 tracking-tighter leading-none">User Directory</h1>
-            <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mt-1">Platform Command Center</p>
+            <h1 className="text-2xl font-black text-gray-900 tracking-tighter leading-none">User List</h1>
+            <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mt-1">Manage Users</p>
           </div>
         </div>
 
@@ -100,7 +100,7 @@ const AdminUsers = () => {
               placeholder="Search by name or email..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full h-14 bg-white rounded-[22px] pl-12 pr-6 text-sm font-bold text-gray-900 shadow-sm border border-gray-50 focus:border-gray-900 outline-none transition-all"
+              className="w-full input-premium pl-12 pr-6"
             />
           </div>
 
@@ -124,7 +124,7 @@ const AdminUsers = () => {
         {loading ? (
           <div className="py-20 flex flex-col items-center justify-center gap-4">
             <div className="w-12 h-12 border-4 border-gray-900 border-t-amber-500 rounded-full animate-spin" />
-            <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Loading Profiles...</span>
+            <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Loading Users...</span>
           </div>
         ) : filteredUsers.length > 0 ? (
           <AnimatePresence>
@@ -174,11 +174,11 @@ const AdminUsers = () => {
                     <motion.button
                       whileTap={{ scale: 0.95 }}
                       onClick={() => handleToggleSuspend(u._id, u.isSuspended)}
-                      className={`flex-1 h-12 rounded-[18px] text-[10px] font-black uppercase tracking-widest transition-all flex items-center justify-center gap-2 ${
+                      className={`flex-1 h-[60px] rounded-[18px] text-[10px] font-black uppercase tracking-widest transition-all flex items-center justify-center gap-2 ${
                         u.isSuspended ? 'bg-emerald-50 text-emerald-600' : 'bg-red-50 text-red-500'
                       }`}
                     >
-                      {u.isSuspended ? <><FaCheckCircle /> Authorize Access</> : <><FaBan /> Suspend Account</>}
+                      {u.isSuspended ? <><FaCheckCircle /> Unlock Account</> : <><FaBan /> Lock Account</>}
                     </motion.button>
                   )}
                   {u.role !== 'Admin' && (

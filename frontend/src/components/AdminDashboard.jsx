@@ -35,7 +35,7 @@ const AdminDashboard = () => {
     return (
       <div className="flex flex-col items-center justify-center py-32 space-y-4">
         <div className="w-16 h-16 border-4 border-gray-900 border-t-[#FF9F43] rounded-full animate-spin shadow-xl" />
-        <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.3em] animate-pulse">Accessing Intelligence Hub...</p>
+        <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.3em] animate-pulse">Loading Dashboard...</p>
       </div>
     );
   }
@@ -49,14 +49,14 @@ const AdminDashboard = () => {
             <div className="w-12 h-12 bg-[#FF9F43] rounded-[18px] flex items-center justify-center text-white shadow-lg">
               <FaUserShield size={20} />
             </div>
-            <span className="text-white/40 font-black text-[10px] uppercase tracking-[0.3em]">Administrator Terminal</span>
+            <span className="text-white/40 font-black text-[10px] uppercase tracking-[0.3em]">Admin Home</span>
           </div>
           <h2 className="text-white text-3xl font-black tracking-tighter leading-tight">
             Welcome Back,<br />
-            <span className="text-[#FF9F43]">Commander {user.name.split(' ')[0]}</span>
+            <span className="text-[#FF9F43]">Admin {user.name.split(' ')[0]}</span>
           </h2>
           <p className="text-white/40 text-[11px] font-medium mt-4 max-w-[200px] leading-relaxed">
-            All systems operational. Intelligence hub synchronized with real-time data.
+            Everything is working. Dashboard is updated with latest info.
           </p>
         </div>
         <FaShieldAlt className="absolute right-[-5%] bottom-[-5%] text-[180px] text-white opacity-[0.03] rotate-12 group-hover:rotate-0 transition-transform duration-1000" />
@@ -72,7 +72,7 @@ const AdminDashboard = () => {
         <StatCard title="Active Services" value={stats?.totalBookings ?? 0} icon={<FaBoxOpen />} color="dark" onClick={() => navigate('/admin/services')} />
         <StatCard title="Pet Community" value={stats?.totalPets ?? 0} icon={<FaPaw />} color="dark" />
         <StatCard 
-          title="Gross Revenue" 
+          title="Total Earnings" 
           value={`₹${(stats?.totalRevenue ?? 0).toLocaleString('en-IN')}`} 
           icon={<FaRupeeSign />} 
           color="gold" 
@@ -81,19 +81,19 @@ const AdminDashboard = () => {
 
       {/* Quick Action Hub */}
       <section className="space-y-4">
-        <h3 className="text-xl font-black text-gray-900 tracking-tight px-1">Control Center</h3>
+        <h3 className="text-xl font-black text-gray-900 tracking-tight px-1">Main Center</h3>
         <div className="grid grid-cols-1 gap-4">
           <ActionTile 
-            title="User Management" 
-            desc="Suspend accounts, verify roles, and audit security."
+            title="User List" 
+            desc="Lock accounts, check roles, and manage users."
             icon={<FaUsers />}
             path="/admin/users"
             badge={stats?.pendingApprovals > 0 ? `${stats.pendingApprovals} Pending` : null}
             navigate={navigate}
           />
           <ActionTile 
-            title="Service Inventory" 
-            desc="Audit veterinary and grooming service listings."
+            title="Service List" 
+            desc="Check vet and grooming service list."
             icon={<FaBoxOpen />}
             path="/admin/services"
             navigate={navigate}
@@ -104,7 +104,7 @@ const AdminDashboard = () => {
       {/* Activity Monitor */}
       <section className="bg-white p-8 rounded-[45px] shadow-sm border border-gray-100">
         <div className="flex justify-between items-center mb-8">
-          <h3 className="text-xl font-black text-gray-900 tracking-tight">Recent Onboarding</h3>
+          <h3 className="text-xl font-black text-gray-900 tracking-tight">Recently Joined</h3>
           <FaClock className="text-gray-200" />
         </div>
         <div className="space-y-6">

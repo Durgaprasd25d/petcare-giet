@@ -46,7 +46,7 @@ const Dashboard = ({ staffView }) => {
     },
     {
       title: "Luxury Pet Grooming",
-      desc: "Give your furry friend a premium spa day.",
+      desc: "Give your furry friend a spa day.",
       badge: "Special 20% Off",
       img: "/images/slides/slide2.png",
       color: "from-pink-500 to-rose-600",
@@ -61,7 +61,7 @@ const Dashboard = ({ staffView }) => {
       link: "/book?type=Walking"
     },
     {
-      title: "Premium Boarding",
+      title: "Boarding",
       desc: "A home away from home for your pet.",
       badge: "5-Star Suites",
       img: "/images/slides/slide4.png",
@@ -215,7 +215,7 @@ const Dashboard = ({ staffView }) => {
       return (
         <div className="flex flex-col gap-10 pb-32">
           <section className="relative px-1">
-            <div className="bg-white h-16 rounded-full shadow-[0_10px_30px_rgba(0,0,0,0.03)] border border-gray-50 flex items-center px-6 gap-3 focus-within:ring-4 focus-within:ring-[#FF9F43]/5 transition-all">
+            <div className="glass-card h-[72px] rounded-full flex items-center px-6 gap-3 focus-within:ring-4 focus-within:ring-[#FF9F43]/5 transition-all">
               <FaSearch className="text-gray-300" />
               <input
                 type="text"
@@ -421,8 +421,8 @@ const Dashboard = ({ staffView }) => {
 
                   {b.status === 'Pending' && (
                     <div className="flex gap-3 mt-8">
-                      <motion.button whileTap={{ scale: 0.95 }} onClick={() => handleStatusUpdate(b._id, 'Accepted')} className="flex-[2] h-14 bg-gray-900 text-white rounded-[22px] font-black text-[10px] uppercase tracking-[0.2em] shadow-xl shadow-black/10 active:scale-95 transition-all">Accept</motion.button>
-                      <motion.button whileTap={{ scale: 0.95 }} onClick={() => handleStatusUpdate(b._id, 'Rejected')} className="flex-1 h-14 bg-gray-50 text-gray-400 rounded-[22px] font-black text-[10px] uppercase tracking-widest hover:bg-red-50 hover:text-red-500 transition-all">Decline</motion.button>
+                      <motion.button whileTap={{ scale: 0.95 }} onClick={() => handleStatusUpdate(b._id, 'Accepted')} className="flex-[2] btn-premium bg-gray-900 text-white shadow-xl">Accept</motion.button>
+                      <motion.button whileTap={{ scale: 0.95 }} onClick={() => handleStatusUpdate(b._id, 'Rejected')} className="flex-1 h-[72px] bg-gray-50 text-gray-400 rounded-[30px] font-black text-[10px] uppercase tracking-widest hover:bg-red-50 hover:text-red-500 transition-all">Decline</motion.button>
                     </div>
                   )}
 
@@ -431,7 +431,7 @@ const Dashboard = ({ staffView }) => {
                       <motion.button
                         whileTap={{ scale: 0.98 }}
                         onClick={() => handleStatusUpdate(b._id, 'Completed')}
-                        className="w-full h-14 bg-emerald-500 text-white rounded-[22px] font-black text-[10px] uppercase tracking-[0.2em] shadow-xl shadow-emerald-500/20 flex items-center justify-center gap-3"
+                        className="w-full btn-premium bg-emerald-500 text-white shadow-xl flex items-center justify-center gap-3"
                       >
                         <FaCheck />
                         <span>Complete Service</span>
@@ -543,9 +543,9 @@ const Dashboard = ({ staffView }) => {
           <div className="w-20 h-20 bg-white rounded-[28px] flex items-center justify-center mx-auto mb-6 shadow-xl border border-gray-50">
             <FaStethoscope className="text-gray-900 text-3xl" />
           </div>
-          <h3 className="text-2xl font-black text-gray-900 tracking-tighter">System Synchronized</h3>
+          <h3 className="text-2xl font-black text-gray-900 tracking-tighter">Everything is Ready</h3>
           <p className="text-xs font-medium text-gray-400 mt-3 px-4 leading-relaxed opacity-70">
-            Welcome back, {user.name.split(' ')[0]}. Your terminal is optimized and ready for professional management.
+            Welcome back, {user.name.split(' ')[0]}. Your home is set up and ready for work.
           </p>
         </section>
       </div>
@@ -589,7 +589,7 @@ const Dashboard = ({ staffView }) => {
       <Modal
         isOpen={isNotificationOpen}
         onClose={() => setNotificationOpen(false)}
-        title="Intelligence Hub"
+        title="Activity Center"
       >
         <div className="space-y-4 py-4">
           <div className="space-y-3 max-h-[450px] overflow-y-auto pr-2 no-scrollbar">
@@ -621,13 +621,13 @@ const Dashboard = ({ staffView }) => {
               )) : (
                 <div className="py-20 text-center opacity-20">
                   <FaBell className="text-6xl mx-auto mb-4" />
-                  <p className="text-[10px] font-black uppercase tracking-[0.3em]">Silence in the hub</p>
+                  <p className="text-[10px] font-black uppercase tracking-[0.3em]">No activity yet</p>
                 </div>
               )}
             </AnimatePresence>
           </div>
           {notifications.length > 0 && (
-            <button onClick={handleMarkAllRead} className="w-full h-14 rounded-2xl text-[10px] font-black uppercase tracking-widest text-gray-400 hover:text-gray-900 transition-colors">Clear All Intelligence</button>
+            <button onClick={handleMarkAllRead} className="w-full h-14 rounded-2xl text-[10px] font-black uppercase tracking-widest text-gray-400 hover:text-gray-900 transition-colors">Clear All Activity</button>
           )}
         </div>
       </Modal>
@@ -642,41 +642,41 @@ const Dashboard = ({ staffView }) => {
               <div className="space-y-2"><label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Species</label><select className="w-full h-14 bg-gray-50 border-2 border-transparent rounded-[22px] px-5 text-sm font-bold text-gray-900 focus:bg-white focus:border-gray-900 outline-none transition-all appearance-none" value={petForm.species} onChange={(e) => setPetForm({ ...petForm, species: e.target.value })}><option value="Dog">Dog</option><option value="Cat">Cat</option><option value="Bird">Bird</option><option value="Rabbit">Rabbit</option></select></div>
               <div className="space-y-2"><label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Age (Years)</label><input type="number" className="w-full h-14 bg-gray-50 border-2 border-transparent rounded-[22px] px-6 text-sm font-bold text-gray-900 focus:bg-white focus:border-gray-900 outline-none transition-all" value={petForm.age} onChange={(e) => setPetForm({ ...petForm, age: e.target.value })} placeholder="2" /></div>
             </div>
-            <div className="space-y-2"><label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Visual Profile</label><input type="file" onChange={(e) => uploadImageHandler(e, setPetForm)} className="hidden" id="pet-photo-upload" /><label htmlFor="pet-photo-upload" className="w-full flex flex-col items-center justify-center gap-3 h-32 bg-gray-50 border-2 border-dashed border-gray-100 rounded-[35px] cursor-pointer hover:bg-white hover:border-gray-900 transition-all overflow-hidden relative group">{petForm.image && <img src={petForm.image.startsWith('http') ? petForm.image : `${import.meta.env.VITE_API_URL.replace('/api', '')}${petForm.image}`} className="absolute inset-0 w-full h-full object-cover opacity-60" />}<div className="relative z-10 flex flex-col items-center"><FaUpload className="text-gray-900 mb-2 group-hover:scale-110 transition-transform" /><span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">{isUploading ? 'Syncing...' : 'Upload Portrait'}</span></div></label></div>
+            <div className="space-y-2"><label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Profile Photo</label><input type="file" onChange={(e) => uploadImageHandler(e, setPetForm)} className="hidden" id="pet-photo-upload" /><label htmlFor="pet-photo-upload" className="w-full flex flex-col items-center justify-center gap-3 h-32 bg-gray-50 border-2 border-dashed border-gray-100 rounded-[35px] cursor-pointer hover:bg-white hover:border-gray-900 transition-all overflow-hidden relative group">{petForm.image && <img src={petForm.image.startsWith('http') ? petForm.image : `${import.meta.env.VITE_API_URL.replace('/api', '')}${petForm.image}`} className="absolute inset-0 w-full h-full object-cover opacity-60" />}<div className="relative z-10 flex flex-col items-center"><FaUpload className="text-gray-900 mb-2 group-hover:scale-110 transition-transform" /><span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">{isUploading ? 'Uploading...' : 'Upload Photo'}</span></div></label></div>
           </div>
-          <motion.button whileTap={{ scale: 0.95 }} type="submit" className="w-full h-18 bg-gray-900 text-white rounded-[26px] font-black uppercase tracking-[0.2em] shadow-2xl active:scale-95 transition-all mt-4" disabled={isUploading}>Register Profile</motion.button>
+          <motion.button whileTap={{ scale: 0.95 }} type="submit" className="w-full btn-premium bg-gray-900 text-white shadow-2xl mt-4" disabled={isUploading}>Save Profile</motion.button>
         </form>
       </Modal>
 
-      <Modal isOpen={isServiceModalOpen} onClose={() => { setServiceModalOpen(false); setIsEditingService(false); }} title={isEditingService ? 'Revise Service' : 'Elite Service Entry'}>
+      <Modal isOpen={isServiceModalOpen} onClose={() => { setServiceModalOpen(false); setIsEditingService(false); }} title={isEditingService ? 'Update Service' : 'Add New Service'}>
         <form onSubmit={handleAddService} className="space-y-6 py-4">
           <div className="space-y-5">
             <div className="space-y-2">
-              <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Designation</label>
-              <input required className="w-full h-14 bg-gray-50 border-2 border-transparent rounded-[22px] px-6 text-sm font-bold text-gray-900 focus:bg-white focus:border-gray-900 outline-none transition-all" value={serviceForm.name} onChange={(e) => setServiceForm({ ...serviceForm, name: e.target.value })} placeholder="Executive Grooming" />
+              <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Service Name</label>
+              <input required className="w-full h-14 bg-gray-50 border-2 border-transparent rounded-[22px] px-6 text-sm font-bold text-gray-900 focus:bg-white focus:border-gray-900 outline-none transition-all" value={serviceForm.name} onChange={(e) => setServiceForm({ ...serviceForm, name: e.target.value })} placeholder="Full Grooming" />
             </div>
             <div className="space-y-2">
-              <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Briefing</label>
-              <textarea required className="w-full h-28 bg-gray-50 border-2 border-transparent rounded-[22px] px-6 py-4 text-sm font-bold text-gray-900 focus:bg-white focus:border-gray-900 outline-none transition-all resize-none" value={serviceForm.description} onChange={(e) => setServiceForm({ ...serviceForm, description: e.target.value })} placeholder="Elaborate on the elite care offered..." />
+              <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Description</label>
+              <textarea required className="w-full h-28 bg-gray-50 border-2 border-transparent rounded-[22px] px-6 py-4 text-sm font-bold text-gray-900 focus:bg-white focus:border-gray-900 outline-none transition-all resize-none" value={serviceForm.description} onChange={(e) => setServiceForm({ ...serviceForm, description: e.target.value })} placeholder="Details about the service..." />
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Investment (₹)</label>
+                <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Price (₹)</label>
                 <input type="number" required className="w-full h-14 bg-gray-50 border-2 border-transparent rounded-[22px] px-6 text-sm font-bold text-gray-900 focus:bg-white focus:border-gray-900 outline-none transition-all" value={serviceForm.price} onChange={(e) => setServiceForm({ ...serviceForm, price: e.target.value })} placeholder="1500" />
               </div>
               <div className="space-y-2">
-                <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Timeframe (Min)</label>
+                <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Duration (Min)</label>
                 <input type="number" required className="w-full h-14 bg-gray-50 border-2 border-transparent rounded-[22px] px-6 text-sm font-bold text-gray-900 focus:bg-white focus:border-gray-900 outline-none transition-all" value={serviceForm.duration} onChange={(e) => setServiceForm({ ...serviceForm, duration: e.target.value })} placeholder="60" />
               </div>
             </div>
           </div>
-          <motion.button whileTap={{ scale: 0.95 }} type="submit" className="w-full h-18 bg-gray-900 text-white rounded-[26px] font-black uppercase tracking-[0.2em] shadow-2xl transition-all mt-4">
-            {isEditingService ? 'Sync Revisions' : 'Launch Service'}
+          <motion.button whileTap={{ scale: 0.95 }} type="submit" className="w-full btn-premium bg-gray-900 text-white shadow-2xl mt-4">
+            {isEditingService ? 'Save Changes' : 'Add Service'}
           </motion.button>
         </form>
       </Modal>
 
-      <Modal isOpen={isServiceDetailOpen} onClose={() => setServiceDetailOpen(false)} title="Intelligence Report">
+      <Modal isOpen={isServiceDetailOpen} onClose={() => setServiceDetailOpen(false)} title="Service Details">
         {selectedService && (
           <div className="space-y-8 py-6">
             <div className="flex items-center gap-6">
@@ -689,7 +689,7 @@ const Dashboard = ({ staffView }) => {
               </div>
             </div>
             <div className="flex gap-4">
-              <motion.button whileTap={{ scale: 0.95 }} onClick={openEditService} className="flex-1 h-16 bg-gray-900 text-white rounded-[24px] font-black text-[10px] uppercase tracking-[0.2em] shadow-2xl transition-all">Edit Parameters</motion.button>
+              <motion.button whileTap={{ scale: 0.95 }} onClick={openEditService} className="flex-1 btn-premium bg-gray-900 text-white shadow-2xl">Edit Details</motion.button>
               <motion.button whileTap={{ scale: 0.95 }} onClick={handleDeleteService} className="w-16 h-16 bg-red-50 text-red-500 rounded-[24px] flex items-center justify-center shadow-sm border border-red-100"><FaTimes /></motion.button>
             </div>
           </div>

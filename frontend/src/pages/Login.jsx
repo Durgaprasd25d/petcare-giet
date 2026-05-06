@@ -65,7 +65,7 @@ const Login = () => {
             <h1 className="text-4xl font-black text-gray-900 tracking-tighter leading-tight">
               Welcome <span className="text-[#FF9F43]">Back!</span>
             </h1>
-            <p className="text-gray-400 font-medium mt-1 text-sm">Access your pet's premium world</p>
+            <p className="text-gray-400 font-medium mt-1 text-sm">Go to your pet's world</p>
           </div>
 
           {/* Form Card */}

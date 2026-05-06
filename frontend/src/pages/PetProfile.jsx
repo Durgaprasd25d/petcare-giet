@@ -176,7 +176,7 @@ const PetProfile = () => {
                <div className="w-5 h-5 bg-[#FF9F43] rounded-md flex items-center justify-center text-[10px]">
                  <FaHistory size={10} />
                </div>
-               <span className="text-[10px] font-black uppercase tracking-widest text-white">Wellness Roadmap</span>
+               <span className="text-[10px] font-black uppercase tracking-widest text-white">Health Journey</span>
              </button>
           </div>
         </div>

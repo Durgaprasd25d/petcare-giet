@@ -68,6 +68,14 @@
   input, select, textarea {
     @apply transition-all duration-300 ease-out;
   }
+
+  .btn-premium {
+    @apply h-[72px] rounded-[30px] font-black uppercase tracking-[0.2em] flex items-center justify-center transition-all duration-300 active:scale-95 disabled:opacity-30;
+  }
+
+  .input-premium {
+    @apply h-[72px] bg-gray-50 border-2 border-transparent rounded-[28px] px-6 text-sm font-bold text-gray-900 focus:bg-white focus:border-gray-900 outline-none transition-all;
+  }
 }
 
 /* Custom animations for premium feel */

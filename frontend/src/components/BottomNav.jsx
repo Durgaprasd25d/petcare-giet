@@ -22,7 +22,7 @@ const BottomNav = () => {
   ];
 
   const staffLinks = [
-    { path: '/dashboard', icon: <FaHome />, label: 'Hub' },
+    { path: '/dashboard', icon: <FaHome />, label: 'Home' },
     { path: '/bookings', icon: <FaCalendarAlt />, label: 'Tasks' },
     { path: '/services?addService=true', icon: <FaPlus />, label: 'Add' },
     { path: '/services', icon: <FaClipboardList />, label: 'List' },

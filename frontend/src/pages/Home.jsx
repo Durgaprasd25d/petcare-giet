@@ -17,30 +17,30 @@ const Home = () => {
 
   const onboardingSteps = useMemo(() => [
     {
-      title: "Elite Pet Care Unified",
-      sub: "Premium health management for your furry companions.",
+      title: "Best Pet Care",
+      sub: "Easy health tracking for your pets.",
       image: "/assets/onboarding/cat_peeking.png",
-      tag: "Intelligence",
+      tag: "Smart",
       translateY: "translate-y-[28%] sm:translate-y-[20%]",
       containerClass: "w-[400px] h-[400px]",
       marginBottom: "mb-[22px]",
       color: "#FF9F43"
     },
     {
-      title: "Direct Professional Access",
-      sub: "Instant bookings with top-tier verified veterinarians.",
+      title: "Talk to Vets",
+      sub: "Book easy visits with verified doctors.",
       image: "/assets/onboarding/dog_peeking.png",
-      tag: "Precision",
+      tag: "Clear",
       translateY: "translate-y-[28%] sm:translate-y-[20%]",
       containerClass: "w-[400px] h-[400px]",
       marginBottom: "mb-[14px]",
       color: "#1A1A1A"
     },
     {
-      title: "Streamlined Experience",
-      sub: "Focus on care, not paperwork. Simple & secure.",
+      title: "Simple to Use",
+      sub: "Forget the paperwork. It's simple and safe.",
       image: "/assets/onboarding/rabbit_peeking.png",
-      tag: "Excellence",
+      tag: "Perfect",
       translateY: "translate-y-[15%] sm:translate-y-[10%]",
       containerClass: "w-[450px] h-[450px]",
       marginBottom: "mb-[-122px]",
@@ -143,7 +143,7 @@ const Home = () => {
                   </div>
                 </motion.button>
               </div>
-              <p className="text-center text-[9px] font-black text-gray-300 uppercase tracking-[0.3em]">Payven Executive Platform v2.0</p>
+              <p className="text-center text-[9px] font-black text-gray-300 uppercase tracking-[0.3em]">Payven Pet App v2.0</p>
             </div>
           </div>
         </motion.div>

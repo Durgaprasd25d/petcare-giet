@@ -68,8 +68,8 @@ const AdminServices = () => {
             <FaChevronLeft size={12} />
           </motion.button>
           <div>
-            <h1 className="text-2xl font-black text-gray-900 tracking-tighter leading-none">Global Catalog</h1>
-            <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mt-1">Platform Service Inventory</p>
+            <h1 className="text-2xl font-black text-gray-900 tracking-tighter leading-none">All Services</h1>
+            <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mt-1">Service List</p>
           </div>
         </div>
 
@@ -81,7 +81,7 @@ const AdminServices = () => {
               placeholder="Search services or providers..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full h-14 bg-white rounded-[22px] pl-12 pr-6 text-sm font-bold text-gray-900 shadow-sm border border-gray-50 focus:border-gray-900 outline-none transition-all"
+              className="w-full input-premium pl-12 pr-6"
             />
           </div>
 
@@ -105,7 +105,7 @@ const AdminServices = () => {
         {loading ? (
           <div className="py-20 flex flex-col items-center justify-center gap-4">
             <div className="w-12 h-12 border-4 border-gray-900 border-t-amber-500 rounded-full animate-spin" />
-            <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Scanning Catalog...</span>
+            <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Loading Services...</span>
           </div>
         ) : filteredServices.length > 0 ? (
           <AnimatePresence>
@@ -167,7 +167,7 @@ const AdminServices = () => {
             <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center mx-auto mb-6 shadow-sm">
               <FaClipboardList className="text-gray-200 text-2xl" />
             </div>
-            <p className="text-sm font-black text-gray-300 uppercase tracking-widest">No services found in inventory</p>
+            <p className="text-sm font-black text-gray-300 uppercase tracking-widest">No services found in list</p>
           </div>
         )}
       </div>

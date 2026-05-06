@@ -55,7 +55,7 @@ const FinanceHub = () => {
         amount: Number(formData.amount)
       };
       await dispatch(addExpense(payload)).unwrap();
-      toast.success('Transaction secured in your vault! 💰');
+      toast.success('Money logged successfully! 💰');
       setIsAddModalOpen(false);
       setFormData({
         pet: '',
@@ -89,7 +89,7 @@ const FinanceHub = () => {
                </button>
                <div>
                  <h1 className="text-2xl font-black text-gray-900 tracking-tight">Payven Wallet</h1>
-                 <p className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em] mt-1">Premium Finance Hub</p>
+                 <p className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em] mt-1">Spending Tracker</p>
                </div>
             </div>
             <button 
@@ -106,7 +106,7 @@ const FinanceHub = () => {
            <div className="relative z-10">
               <div className="flex items-center gap-2 mb-2 opacity-60">
                  <FaWallet size={12} />
-                 <span className="text-[10px] font-black uppercase tracking-widest">Total Investment</span>
+                 <span className="text-[10px] font-black uppercase tracking-widest">Total Spent</span>
               </div>
               <h2 className="text-4xl font-black tracking-tighter">₹{totalSpent.toLocaleString()}</h2>
               <div className="mt-6 flex items-center gap-2 text-[10px] font-bold text-[#FF9F43]">
@@ -144,7 +144,7 @@ const FinanceHub = () => {
           <div className="flex items-center justify-between mb-6">
             <h3 className="text-sm font-black text-gray-900 uppercase tracking-widest flex items-center gap-2">
               <FaTag className="text-[#FF9F43]" />
-              Recent Logs
+              Recent Spent
             </h3>
           </div>
           <div className="space-y-4">
@@ -204,12 +204,12 @@ const FinanceHub = () => {
               className="relative w-full max-w-sm bg-white rounded-[45px] p-8 shadow-2xl overflow-visible"
             >
               <div className="w-16 h-1 bg-gray-100 rounded-full mx-auto mb-6" />
-              <h3 className="text-xl font-black text-gray-900 tracking-tight mb-8 text-center">Log Transaction</h3>
+              <h3 className="text-xl font-black text-gray-900 tracking-tight mb-8 text-center">Log Spent</h3>
               
               <form onSubmit={handleAdd} className="space-y-6">
                 {/* Custom Pet Dropdown */}
                 <div className="relative">
-                  <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1 block mb-2">Select Companion</label>
+                  <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1 block mb-2">Select Pet</label>
                   <button 
                     type="button"
                     onClick={() => setActiveDropdown(activeDropdown === 'pet' ? null : 'pet')}
@@ -311,7 +311,7 @@ const FinanceHub = () => {
                     value={formData.description}
                     onChange={(e) => setFormData({...formData, description: e.target.value})}
                     className="w-full h-14 bg-gray-50 border-none rounded-2xl px-5 text-xs font-bold focus:ring-2 focus:ring-[#FF9F43]/20 focus:bg-white transition-all outline-none"
-                    placeholder="Premium Kibble"
+                    placeholder="Pet Food"
                   />
                 </div>
 
@@ -319,7 +319,7 @@ const FinanceHub = () => {
                   type="submit"
                   className="w-full h-16 bg-[#FF9F43] text-white rounded-[22px] font-black text-xs uppercase tracking-[0.2em] shadow-xl shadow-[#FF9F43]/20 mt-4 active:scale-95 transition-all flex items-center justify-center"
                 >
-                  Confirm Log
+                  Save Now
                 </button>
               </form>
             </motion.div>
