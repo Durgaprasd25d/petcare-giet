@@ -31,7 +31,6 @@ const Booking = () => {
   const [selectedServiceReviews, setSelectedServiceReviews] = useState([]);
   const [loadingReviews, setLoadingReviews] = useState(false);
   
-  // Custom Dropdown State
   const [isPetDropdownOpen, setPetDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
 
@@ -40,7 +39,6 @@ const Booking = () => {
     dispatch(getPets());
   }, [dispatch, categoryFilter]);
 
-  // Close dropdown on outside click
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -69,10 +67,10 @@ const Booking = () => {
       };
 
       const { data } = await axios.post(`${import.meta.env.VITE_API_URL}/bookings`, payload, config);
-      const { booking, order } = data;
+      const { booking, order, razorpayKeyId } = data;
 
       const options = {
-        key: import.meta.env.VITE_RAZORPAY_KEY_ID,
+        key: razorpayKeyId || import.meta.env.VITE_RAZORPAY_KEY_ID,
         amount: order.amount,
         currency: order.currency,
         name: "PetCare Premium",
@@ -149,7 +147,6 @@ const Booking = () => {
 
   const selectedPet = pets.find(p => p._id === bookingData.petId);
 
-  // Generate next 7 days for the date picker
   const dates = Array.from({ length: 7 }, (_, i) => {
     const d = new Date();
     d.setDate(d.getDate() + i);
@@ -162,7 +159,6 @@ const Booking = () => {
 
   return (
     <div className="min-h-screen bg-[#FAF5F0] pb-32">
-      {/* Header */}
       <div className="sticky top-0 z-50 bg-[#FAF5F0]/80 backdrop-blur-xl px-6 py-6 flex justify-between items-center">
         <button 
           onClick={() => navigate(-1)} 
@@ -177,7 +173,6 @@ const Booking = () => {
         <div className="w-11" />
       </div>
 
-      {/* Tabs */}
       <div className="px-6 mb-8">
         <div className="bg-white/50 backdrop-blur-md p-1.5 rounded-[28px] flex gap-1 border border-white/50">
            <button 
@@ -202,7 +197,6 @@ const Booking = () => {
       </div>
 
       <div className="px-6 space-y-8">
-        {/* Service List */}
         <section className="space-y-4">
           <div className="flex justify-between items-center px-1">
              <h2 className="text-sm font-black text-gray-400 uppercase tracking-widest">
@@ -273,7 +267,6 @@ const Booking = () => {
           </div>
         </section>
 
-        {/* Booking Form Card */}
         <AnimatePresence>
           {bookingData.serviceId && (
             <motion.div 
@@ -287,7 +280,6 @@ const Booking = () => {
               </h3>
 
               <div className="space-y-4">
-                {/* Custom Pet Dropdown */}
                 <div className="space-y-1.5 relative" ref={dropdownRef}>
                   <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Select Your Pet</label>
                   <button
@@ -303,7 +295,7 @@ const Booking = () => {
                           <div className="w-8 h-8 rounded-full overflow-hidden border border-gray-200">
                              {selectedPet.image ? (
                                <img 
-                                src={selectedPet.image.startsWith('http') ? selectedPet.image : `${import.meta.env.VITE_API_URL}${selectedPet.image}`} 
+                                src={selectedPet.image.startsWith('http') ? selectedPet.image : `${import.meta.env.VITE_API_URL.replace('/api', '')}${selectedPet.image}`} 
                                 className="w-full h-full object-cover" 
                                />
                              ) : (
@@ -348,7 +340,7 @@ const Booking = () => {
                                 <div className="w-10 h-10 rounded-full overflow-hidden border border-gray-100 shadow-sm">
                                    {pet.image ? (
                                      <img 
-                                      src={pet.image.startsWith('http') ? pet.image : `${import.meta.env.VITE_API_URL}${pet.image}`} 
+                                      src={pet.image.startsWith('http') ? pet.image : `${import.meta.env.VITE_API_URL.replace('/api', '')}${pet.image}`} 
                                       className="w-full h-full object-cover" 
                                      />
                                    ) : (
@@ -377,7 +369,6 @@ const Booking = () => {
                   </AnimatePresence>
                 </div>
 
-                {/* Custom Date & Time Picker Trigger */}
                 <div className="space-y-1.5">
                   <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Schedule Appointment</label>
                   <button
@@ -433,10 +424,8 @@ const Booking = () => {
         </AnimatePresence>
       </div>
 
-      {/* Custom Date & Time Modal */}
       <Modal isOpen={isDateTimeModalOpen} onClose={() => setDateTimeModalOpen(false)} title="Select Slot">
          <div className="space-y-8 py-4">
-            {/* Date Scroller */}
             <div className="space-y-4">
                <h4 className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1 flex items-center gap-2">
                   <FaCalendarAlt className="text-[#FF9F43]" /> Select Date
@@ -462,7 +451,6 @@ const Booking = () => {
                </div>
             </div>
 
-            {/* Time Grid */}
             <div className="space-y-4">
                <h4 className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1 flex items-center gap-2">
                   <FaClock className="text-[#FF9F43]" /> Available Times
@@ -495,7 +483,6 @@ const Booking = () => {
          </div>
       </Modal>
 
-      {/* Reviews Modal */}
       <Modal isOpen={isReviewsModalOpen} onClose={() => setReviewsModalOpen(false)} title="Service Feedback">
         <div className="space-y-4">
           {loadingReviews ? (

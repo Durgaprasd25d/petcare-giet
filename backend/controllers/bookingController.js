@@ -54,15 +54,12 @@ exports.createBooking = async (req, res) => {
         );
 
         if (io) {
-          // Fetch the populated booking to send a rich object
           const populatedBooking = await Booking.findById(booking._id)
             .populate('pet', 'name species breed image')
             .populate('owner', 'name email')
             .populate('provider', 'name');
           
-          // Notify Provider
           io.to(providerId.toString()).emit('bookingCreated', populatedBooking);
-          // Notify Owner
           io.to(req.user._id.toString()).emit('bookingCreated', populatedBooking);
         }
 
@@ -73,7 +70,11 @@ exports.createBooking = async (req, res) => {
             receipt: `receipt_${booking._id}`,
         });
 
-        res.status(201).json({ booking, order });
+        res.status(201).json({ 
+            booking, 
+            order,
+            razorpayKeyId: process.env.RAZORPAY_KEY_ID 
+        });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
@@ -149,7 +150,6 @@ exports.updateBookingStatus = async (req, res) => {
         booking.status = req.body.status || booking.status;
         const updatedBooking = await booking.save();
 
-        // Notify Owner about status change
         if (oldStatus !== updatedBooking.status) {
           const io = req.app.get('io');
           await sendNotification(
