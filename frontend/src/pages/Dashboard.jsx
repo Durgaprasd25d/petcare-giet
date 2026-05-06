@@ -189,7 +189,6 @@ const Dashboard = ({ staffView }) => {
     dispatch(updateBookingStatus({ id, status }));
   };
 
-  // Filtered pets for working search
   const filteredPets = pets.filter(pet =>
     pet.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     pet.species.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -240,7 +239,6 @@ const Dashboard = ({ staffView }) => {
     if (user.role === 'Pet Owner') {
       return (
         <div className="flex flex-col gap-10 pb-32">
-          {/* Search Bar - Working Logic */}
           <section className="relative px-1">
             <div className="bg-white h-16 rounded-full shadow-[0_10px_30px_rgba(0,0,0,0.03)] border border-gray-50 flex items-center px-6 gap-3">
               <FaSearch className="text-gray-300" />
@@ -254,7 +252,6 @@ const Dashboard = ({ staffView }) => {
             </div>
           </section>
 
-          {/* Improved Slider with Auto-Scroll - Interactive Click */}
           <section className="relative overflow-hidden rounded-[45px] shadow-[0_25px_60px_rgba(0,0,0,0.08)] cursor-pointer" onClick={() => navigate(slides[currentSlide].link)}>
             <div className="h-[220px] relative">
               <AnimatePresence>
@@ -284,7 +281,6 @@ const Dashboard = ({ staffView }) => {
                 </motion.div>
               </AnimatePresence>
             </div>
-            {/* Pagination Dots - 4 Dots */}
             <div className="absolute bottom-6 left-8 flex gap-2 z-20">
               {slides.map((_, idx) => (
                 <button
@@ -296,8 +292,6 @@ const Dashboard = ({ staffView }) => {
             </div>
           </section>
 
-
-          {/* Pet Community / Your Pets - Improved Image Visibility */}
           <section className="space-y-4">
             <div className="flex justify-between items-center px-1">
               <h3 className="text-xl font-black text-gray-900 tracking-tight">Pet Community</h3>
@@ -318,7 +312,6 @@ const Dashboard = ({ staffView }) => {
                     <span className="text-[10px] font-black text-gray-500 tracking-tight leading-none uppercase opacity-50">Pet of</span>
                     <p className="text-[12px] font-black text-gray-900 leading-none mt-0.5">{user.name.split(' ')[0]}</p>
                   </div>
-                  {/* Improved Pet Image Container - FULL COVER */}
                   <div className="w-28 h-28 mt-8 bg-white rounded-[35px] flex items-center justify-center overflow-hidden border-2 border-white shadow-lg group-hover:scale-105 transition-transform duration-500 relative">
                     {pet.image ? (
                       <img
@@ -357,7 +350,6 @@ const Dashboard = ({ staffView }) => {
             <Pagination items={filteredPets} currentPage={petPage} setPage={setPetPage} />
           </section>
 
-          {/* Recent Activity Section */}
           <section className="space-y-4">
             <div className="flex justify-between items-center px-1">
               <h3 className="text-xl font-black text-gray-900 tracking-tight">Recent Activity</h3>
@@ -398,7 +390,6 @@ const Dashboard = ({ staffView }) => {
       );
     }
 
-    // Staff Views remain similar but with polished spacing
     if (staffView === 'bookings') {
       return (
         <div className="space-y-6 pb-24">
@@ -522,7 +513,6 @@ const Dashboard = ({ staffView }) => {
 
     return (
       <div className="space-y-8 pb-24">
-        {/* Vet/Provider Summary Section */}
         <section className="grid grid-cols-2 gap-4">
           <div className="bg-[#1A1A1A] p-6 rounded-[35px] relative overflow-hidden group">
             <div className="relative z-10">
@@ -539,7 +529,6 @@ const Dashboard = ({ staffView }) => {
           </div>
         </section>
 
-        {/* Pending Requests Stats */}
         <section className="bg-amber-50 p-6 rounded-[35px] border border-amber-100 flex items-center justify-between">
           <div className="flex items-center gap-4">
             <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center text-amber-500 shadow-sm">
@@ -604,7 +593,6 @@ const Dashboard = ({ staffView }) => {
         {renderDashboard()}
       </div>
 
-      {/* Modals remain the same as previous implementation */}
       <Modal
         isOpen={isNotificationOpen}
         onClose={() => setNotificationOpen(false)}
@@ -645,7 +633,6 @@ const Dashboard = ({ staffView }) => {
         </div>
       </Modal>
 
-      {/* Pet Modal */}
       <Modal isOpen={isPetModalOpen} onClose={() => setPetModalOpen(false)} title="Add Pet Profile" noScroll={true}>
         <form onSubmit={handleAddPet} className="space-y-5 py-2">
           <div className="space-y-4">
@@ -664,10 +651,51 @@ const Dashboard = ({ staffView }) => {
       <Modal isOpen={isServiceModalOpen} onClose={() => { setServiceModalOpen(false); setIsEditingService(false); }} title={isEditingService ? 'Update Service' : 'Create New Service'}>
         <form onSubmit={handleAddService} className="space-y-5 py-2">
           <div className="space-y-4">
-            <div className="space-y-1.5"><label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Service Title</label><input required className="w-full h-14 bg-gray-50 border-2 border-gray-100 rounded-2xl px-6 text-sm font-bold text-gray-900 focus:bg-white focus:border-[#FF9F43] outline-none transition-all" value={serviceForm.name} onChange={(e) => setServiceForm({ ...serviceForm, name: e.target.value })} placeholder="Emergency Health Checkup" /></div>
+            <div className="space-y-1.5">
+              <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Service Title</label>
+              <input 
+                required 
+                className="w-full h-14 bg-gray-50 border-2 border-gray-100 rounded-2xl px-6 text-sm font-bold text-gray-900 focus:bg-white focus:border-[#FF9F43] outline-none transition-all" 
+                value={serviceForm.name} 
+                onChange={(e) => setServiceForm({ ...serviceForm, name: e.target.value })} 
+                placeholder="Emergency Health Checkup" 
+              />
+            </div>
+            
+            <div className="space-y-1.5">
+              <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Description</label>
+              <textarea
+                required
+                className="w-full h-24 bg-gray-50 border-2 border-gray-100 rounded-2xl px-6 py-4 text-sm font-bold text-gray-900 focus:bg-white focus:border-[#FF9F43] outline-none transition-all resize-none"
+                value={serviceForm.description}
+                onChange={(e) => setServiceForm({ ...serviceForm, description: e.target.value })}
+                placeholder="Briefly describe what this service includes..."
+              />
+            </div>
+
             <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-1.5"><label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Price (₹)</label><input type="number" className="w-full h-14 bg-gray-50 border-2 border-gray-100 rounded-2xl px-6 text-sm font-bold text-gray-900 focus:bg-white focus:border-[#FF9F43] outline-none transition-all" value={serviceForm.price} onChange={(e) => setServiceForm({ ...serviceForm, price: e.target.value })} placeholder="500" /></div>
-              <div className="space-y-1.5"><label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Duration (Min)</label><input type="number" className="w-full h-14 bg-gray-50 border-2 border-gray-100 rounded-2xl px-6 text-sm font-bold text-gray-900 focus:bg-white focus:border-[#FF9F43] outline-none transition-all" value={serviceForm.duration} onChange={(e) => setServiceForm({ ...serviceForm, duration: e.target.value })} placeholder="30" /></div>
+              <div className="space-y-1.5">
+                <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Price (₹)</label>
+                <input 
+                  type="number" 
+                  required
+                  className="w-full h-14 bg-gray-50 border-2 border-gray-100 rounded-2xl px-6 text-sm font-bold text-gray-900 focus:bg-white focus:border-[#FF9F43] outline-none transition-all" 
+                  value={serviceForm.price} 
+                  onChange={(e) => setServiceForm({ ...serviceForm, price: e.target.value })} 
+                  placeholder="500" 
+                />
+              </div>
+              <div className="space-y-1.5">
+                <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Duration (Min)</label>
+                <input 
+                  type="number" 
+                  required
+                  className="w-full h-14 bg-gray-50 border-2 border-gray-100 rounded-2xl px-6 text-sm font-bold text-gray-900 focus:bg-white focus:border-[#FF9F43] outline-none transition-all" 
+                  value={serviceForm.duration} 
+                  onChange={(e) => setServiceForm({ ...serviceForm, duration: e.target.value })} 
+                  placeholder="30" 
+                />
+              </div>
             </div>
           </div>
           <button type="submit" className="w-full h-16 bg-[#FF9F43] text-white rounded-[22px] font-black uppercase tracking-widest shadow-lg shadow-[#FF9F43]/20 active:scale-95 transition-all mt-4">
@@ -707,12 +735,5 @@ const Dashboard = ({ staffView }) => {
     </div>
   );
 };
-
-const CategoryPill = ({ icon, label, onClick }) => (
-  <button onClick={onClick} className="flex-shrink-0 bg-white h-14 rounded-full px-6 flex items-center gap-3 shadow-sm border border-gray-50 active:scale-95 transition-all hover:border-[#FF9F43]/30">
-    <span className="text-lg">{icon}</span>
-    <span className="text-xs font-black text-gray-700 uppercase tracking-tight">{label}</span>
-  </button>
-);
 
 export default Dashboard;
