@@ -18,7 +18,10 @@ const initialState = {
 export const register = createAsyncThunk('auth/register', async (userData, thunkAPI) => {
   try {
     const response = await axios.post(`${API_URL}/register`, userData);
-    return { message: response.data.message, email: response.data.email };
+    if (response.data && response.data.token) {
+      localStorage.setItem('user', JSON.stringify(response.data));
+    }
+    return response.data;
   } catch (error) {
     const message = error.response?.data?.message || error.message;
     return thunkAPI.rejectWithValue(message);
@@ -94,8 +97,13 @@ export const authSlice = createSlice({
       .addCase(register.fulfilled, (state, action) => {
         state.isLoading = false;
         state.isSuccess = true;
-        state.requireOTP = true;
-        state.registeredEmail = action.payload.email;
+        if (action.payload.token) {
+          state.user = action.payload;
+          state.requireOTP = false;
+        } else {
+          state.requireOTP = true;
+          state.registeredEmail = action.payload.email;
+        }
         state.message = action.payload.message;
       })
       .addCase(register.rejected, (state, action) => {
