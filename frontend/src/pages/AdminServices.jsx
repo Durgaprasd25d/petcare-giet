@@ -48,6 +48,7 @@ const AdminServices = () => {
 
   const filteredServices = useMemo(() => {
     return services.filter(s => {
+      if (!s || !s.name) return false;
       const matchesSearch = s.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
                             s.provider?.name?.toLowerCase().includes(searchTerm.toLowerCase());
       const matchesCategory = categoryFilter === 'All' || s.category === categoryFilter;

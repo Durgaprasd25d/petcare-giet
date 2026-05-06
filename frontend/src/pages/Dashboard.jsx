@@ -28,6 +28,7 @@ const Dashboard = ({ staffView }) => {
   const [selectedService, setSelectedService] = useState(null);
   const [isEditingService, setIsEditingService] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [currentSlide, setCurrentSlide] = useState(0);
   const [petPage, setPetPage] = useState(1);
@@ -139,35 +140,52 @@ const Dashboard = ({ staffView }) => {
     }
   }, [user.token]);
 
-  const handleAddPet = (e) => {
+  const handleAddPet = async (e) => {
     e.preventDefault();
-    dispatch(addPet(petForm));
-    setPetModalOpen(false);
-    setPetForm({ name: '', species: 'Dog', breed: '', age: '', gender: 'Male', image: '' });
+    setIsSubmitting(true);
+    try {
+      await dispatch(addPet(petForm)).unwrap();
+      setPetModalOpen(false);
+      setPetForm({ name: '', species: 'Dog', breed: '', age: '', gender: 'Male', image: '' });
+    } catch (error) {
+      console.error(error);
+      alert('Failed to add pet');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
-  const handleAddService = (e) => {
+  const handleAddService = async (e) => {
     e.preventDefault();
-    if (isEditingService && selectedService) {
-      dispatch(updateService({ id: selectedService._id, serviceData: serviceForm }));
-    } else {
-      dispatch(createService(serviceForm));
+    setIsSubmitting(true);
+    try {
+      if (isEditingService && selectedService) {
+        await dispatch(updateService({ id: selectedService._id, serviceData: serviceForm })).unwrap();
+      } else {
+        await dispatch(createService(serviceForm)).unwrap();
+      }
+      setServiceModalOpen(false);
+      setIsEditingService(false);
+      setSelectedService(null);
+      setServiceForm({ ...serviceForm, name: '', description: '', price: '', duration: '30', image: '' });
+    } catch (error) {
+      console.error(error);
+      alert('Failed to save service');
+    } finally {
+      setIsSubmitting(false);
     }
-    setServiceModalOpen(false);
-    setIsEditingService(false);
-    setSelectedService(null);
-    setServiceForm({ ...serviceForm, name: '', description: '', price: '', duration: '30', image: '' });
   };
 
   const handleStatusUpdate = useCallback((id, status) => {
     dispatch(updateBookingStatus({ id, status }));
   }, [dispatch]);
 
-  const filteredPets = useMemo(() => pets.filter(pet =>
-    pet.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    pet.species.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    (pet.breed && pet.breed.toLowerCase().includes(searchTerm.toLowerCase()))
-  ), [pets, searchTerm]);
+  const filteredPets = useMemo(() => pets.filter(pet => {
+    if (!pet || !pet.name) return false;
+    return pet.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (pet.species && pet.species.toLowerCase().includes(searchTerm.toLowerCase())) ||
+    (pet.breed && pet.breed.toLowerCase().includes(searchTerm.toLowerCase()));
+  }), [pets, searchTerm]);
 
   const Pagination = ({ items, currentPage, setPage }) => {
     const totalPages = Math.ceil(items.length / ITEMS_PER_PAGE);
@@ -653,7 +671,9 @@ const Dashboard = ({ staffView }) => {
             </div>
             <div className="space-y-2"><label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Profile Photo</label><input type="file" onChange={(e) => uploadImageHandler(e, setPetForm)} className="hidden" id="pet-photo-upload" /><label htmlFor="pet-photo-upload" className="w-full flex flex-col items-center justify-center gap-3 h-32 bg-gray-50 border-2 border-dashed border-gray-100 rounded-[35px] cursor-pointer hover:bg-white hover:border-gray-900 transition-all overflow-hidden relative group">{petForm.image && <img src={petForm.image.startsWith('http') ? petForm.image : `${import.meta.env.VITE_API_URL.replace('/api', '')}${petForm.image}`} className="absolute inset-0 w-full h-full object-cover opacity-60" />}<div className="relative z-10 flex flex-col items-center"><FaUpload className="text-gray-900 mb-2 group-hover:scale-110 transition-transform" /><span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">{isUploading ? 'Uploading...' : 'Upload Photo'}</span></div></label></div>
           </div>
-          <motion.button whileTap={{ scale: 0.95 }} type="submit" className="w-full btn-premium bg-gray-900 text-white shadow-2xl mt-4" disabled={isUploading}>Save Profile</motion.button>
+          <motion.button whileTap={{ scale: 0.95 }} type="submit" className="w-full btn-premium bg-gray-900 text-white shadow-2xl mt-4 disabled:opacity-50" disabled={isSubmitting || isUploading}>
+            {isSubmitting ? 'Saving...' : 'Save Profile'}
+          </motion.button>
         </form>
       </Modal>
 
@@ -679,8 +699,8 @@ const Dashboard = ({ staffView }) => {
               </div>
             </div>
           </div>
-          <motion.button whileTap={{ scale: 0.95 }} type="submit" className="w-full btn-premium bg-gray-900 text-white shadow-2xl mt-4">
-            {isEditingService ? 'Save Changes' : 'Add Service'}
+          <motion.button whileTap={{ scale: 0.95 }} type="submit" disabled={isSubmitting} className="w-full btn-premium bg-gray-900 text-white shadow-2xl mt-4 disabled:opacity-50">
+            {isSubmitting ? 'Saving...' : (isEditingService ? 'Save Changes' : 'Add Service')}
           </motion.button>
         </form>
       </Modal>

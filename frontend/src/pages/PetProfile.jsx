@@ -23,6 +23,7 @@ const PetProfile = () => {
   const [isEditModalOpen, setEditModalOpen] = useState(false);
   const [isDeleteModalOpen, setDeleteModalOpen] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [editForm, setEditForm] = useState({
     name: '', species: 'Dog', breed: '', age: '', gender: 'Male', image: ''
   });
@@ -100,10 +101,18 @@ const PetProfile = () => {
     }
   };
 
-  const handleUpdate = (e) => {
+  const handleUpdate = async (e) => {
     e.preventDefault();
-    dispatch(updatePet({ id: pet._id, petData: editForm }));
-    setEditModalOpen(false);
+    setIsSubmitting(true);
+    try {
+      await dispatch(updatePet({ id: pet._id, petData: editForm })).unwrap();
+      setEditModalOpen(false);
+    } catch (error) {
+      console.error(error);
+      alert('Failed to update profile');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleDelete = () => {
@@ -312,9 +321,10 @@ const PetProfile = () => {
           </div>
           <button 
             type="submit" 
-            className="w-[200px] mx-auto h-14 bg-[#FF9F43] rounded-[22px] text-white text-sm font-black uppercase tracking-widest shadow-[0_10px_25px_rgba(255,159,67,0.3)] active:scale-95 transition-all flex items-center justify-center mt-4"
+            disabled={isSubmitting || isUploading}
+            className="w-[200px] mx-auto h-14 bg-[#FF9F43] rounded-[22px] text-white text-sm font-black uppercase tracking-widest shadow-[0_10px_25px_rgba(255,159,67,0.3)] active:scale-95 transition-all flex items-center justify-center mt-4 disabled:opacity-50"
           >
-            Save Changes
+            {isSubmitting ? 'Saving...' : 'Save Changes'}
           </button>
         </form>
       </Modal>

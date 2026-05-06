@@ -32,6 +32,7 @@ const FinanceHub = () => {
     date: new Date().toISOString().split('T')[0]
   });
   const [activeDropdown, setActiveDropdown] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     dispatch(getExpenses());
@@ -49,6 +50,7 @@ const FinanceHub = () => {
     e.preventDefault();
     if (!formData.pet || !formData.amount) return toast.error('Please fill in Pet and Amount');
     
+    setIsSubmitting(true);
     try {
       const payload = {
         ...formData,
@@ -66,6 +68,8 @@ const FinanceHub = () => {
       });
     } catch (error) {
       toast.error(error?.message || error || 'Failed to add expense');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -317,9 +321,10 @@ const FinanceHub = () => {
 
                 <button 
                   type="submit"
-                  className="w-full h-16 bg-[#FF9F43] text-white rounded-[22px] font-black text-xs uppercase tracking-[0.2em] shadow-xl shadow-[#FF9F43]/20 mt-4 active:scale-95 transition-all flex items-center justify-center"
+                  disabled={isSubmitting}
+                  className="w-full h-16 bg-[#FF9F43] text-white rounded-[22px] font-black text-xs uppercase tracking-[0.2em] shadow-xl shadow-[#FF9F43]/20 mt-4 active:scale-95 transition-all flex items-center justify-center disabled:opacity-50"
                 >
-                  Save Now
+                  {isSubmitting ? 'Saving...' : 'Save Now'}
                 </button>
               </form>
             </motion.div>

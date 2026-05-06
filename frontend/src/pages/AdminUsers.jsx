@@ -57,6 +57,7 @@ const AdminUsers = () => {
 
   const filteredUsers = useMemo(() => {
     return users.filter(u => {
+      if (!u || !u.name || !u.email) return false;
       const matchesSearch = u.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
                             u.email.toLowerCase().includes(searchTerm.toLowerCase());
       const matchesRole = roleFilter === 'All' || u.role === roleFilter;
