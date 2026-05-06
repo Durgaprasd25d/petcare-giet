@@ -1,12 +1,5 @@
 const Booking = require('../models/Booking');
 const Notification = require('../models/Notification');
-const crypto = require('crypto');
-const Razorpay = require('razorpay');
-
-const razorpay = new Razorpay({
-    key_id: process.env.RAZORPAY_KEY_ID,
-    key_secret: process.env.RAZORPAY_KEY_SECRET,
-});
 
 // Helper to send real-time notification
 const sendNotification = async (req, recipient, title, message, type, relatedId) => {
@@ -25,7 +18,7 @@ const sendNotification = async (req, recipient, title, message, type, relatedId)
   }
 };
 
-// @desc    Create a new booking + Razorpay order
+// @desc    Create a new booking (Simplified - No Payment Gateway)
 // @route   POST /api/bookings
 // @access  Private (Pet Owner)
 exports.createBooking = async (req, res) => {
@@ -39,7 +32,8 @@ exports.createBooking = async (req, res) => {
             serviceType,
             date,
             amount,
-            notes
+            notes,
+            status: 'Pending' // All bookings start as pending
         });
 
         // Send Notification to Provider
@@ -63,54 +57,30 @@ exports.createBooking = async (req, res) => {
           io.to(req.user._id.toString()).emit('bookingCreated', populatedBooking);
         }
 
-        // Create real Razorpay order
-        const order = await razorpay.orders.create({
-            amount: amount * 100, // paise
-            currency: 'INR',
-            receipt: `receipt_${booking._id}`,
-        });
-
         res.status(201).json({ 
-            booking, 
-            order,
-            razorpayKeyId: process.env.RAZORPAY_KEY_ID 
+            success: true,
+            message: 'Booking created successfully',
+            booking 
         });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
 };
 
-// @desc    Verify Razorpay Payment Signature
+// @desc    Verify Payment Signature (Deprecated - Now returns success instantly)
 // @route   POST /api/bookings/verify
 // @access  Private (Pet Owner)
 exports.verifyPayment = async (req, res) => {
-    try {
-        const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body;
-
-        const body = razorpay_order_id + '|' + razorpay_payment_id;
-        const expectedSignature = crypto
-            .createHmac('sha256', process.env.RAZORPAY_KEY_SECRET)
-            .update(body.toString())
-            .digest('hex');
-
-        if (expectedSignature !== razorpay_signature) {
-            return res.status(400).json({ message: 'Payment verification failed. Invalid signature.' });
-        }
-
-        res.status(200).json({ message: 'Payment verified successfully' });
-    } catch (error) {
-        res.status(500).json({ message: error.message });
-    }
+    res.status(200).json({ message: 'Payment bypassed successfully' });
 };
 
 // @desc    Get logged in user's bookings (Owner)
-// @route   GET /api/bookings/mybookings
-// @access  Private
 exports.getMyBookings = async (req, res) => {
     try {
         const bookings = await Booking.find({ owner: req.user._id })
             .populate('pet', 'name')
-            .populate('provider', 'name');
+            .populate('provider', 'name')
+            .sort({ createdAt: -1 });
         res.json(bookings);
     } catch (error) {
         res.status(500).json({ message: error.message });
@@ -118,13 +88,12 @@ exports.getMyBookings = async (req, res) => {
 };
 
 // @desc    Get logged in provider's bookings
-// @route   GET /api/bookings/provider
-// @access  Private (Provider/Vet)
 exports.getProviderBookings = async (req, res) => {
     try {
         const bookings = await Booking.find({ provider: req.user._id })
             .populate('pet', 'name species breed')
-            .populate('owner', 'name email');
+            .populate('owner', 'name email')
+            .sort({ createdAt: -1 });
         res.json(bookings);
     } catch (error) {
         res.status(500).json({ message: error.message });
@@ -132,8 +101,6 @@ exports.getProviderBookings = async (req, res) => {
 };
 
 // @desc    Update booking status (Accept/Reject/Complete)
-// @route   PUT /api/bookings/:id/status
-// @access  Private (Provider/Vet)
 exports.updateBookingStatus = async (req, res) => {
     try {
         const booking = await Booking.findById(req.params.id);

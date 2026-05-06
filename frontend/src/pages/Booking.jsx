@@ -1,13 +1,14 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, useMemo, useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { getAllServices } from '../redux/slices/serviceSlice';
 import { getPets } from '../redux/slices/petSlice';
 import axios from 'axios';
-import { FaCalendarPlus, FaUserMd, FaCut, FaWalking, FaStoreAlt, FaCreditCard, FaInfoCircle, FaStar, FaChevronLeft, FaSearch, FaHistory, FaPaw, FaStethoscope, FaTools, FaChevronDown, FaCheck, FaCalendarAlt, FaClock, FaChevronRight } from 'react-icons/fa';
+import { FaCalendarPlus, FaUserMd, FaCut, FaWalking, FaStoreAlt, FaCreditCard, FaInfoCircle, FaStar, FaChevronLeft, FaSearch, FaHistory, FaPaw, FaStethoscope, FaTools, FaChevronDown, FaCheck, FaCalendarAlt, FaClock, FaChevronRight, FaPaperPlane } from 'react-icons/fa';
 import { motion, AnimatePresence } from 'framer-motion';
 import Modal from '../components/Modal';
 
+// Performance optimized component
 const Booking = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -30,6 +31,7 @@ const Booking = () => {
   const [isDateTimeModalOpen, setDateTimeModalOpen] = useState(false);
   const [selectedServiceReviews, setSelectedServiceReviews] = useState([]);
   const [loadingReviews, setLoadingReviews] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   
   const [isPetDropdownOpen, setPetDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
@@ -45,67 +47,21 @@ const Booking = () => {
         setPetDropdownOpen(false);
       }
     };
-    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener('mousedown', handleClickOutside, { passive: true });
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const handlePayment = async (e) => {
-    e.preventDefault();
-    if (!bookingData.serviceId) return alert('Please select a service');
-
-    try {
-      const token = user.token;
-      const config = { headers: { Authorization: `Bearer ${token}` } };
-
-      const payload = {
-        petId: bookingData.petId,
-        providerId: bookingData.serviceId.provider._id,
-        serviceType: bookingData.serviceId.category,
-        date: `${bookingData.date}T${bookingData.time}`,
-        amount: bookingData.serviceId.price,
-        notes: bookingData.notes
-      };
-
-      const { data } = await axios.post(`${import.meta.env.VITE_API_URL}/bookings`, payload, config);
-      const { booking, order, razorpayKeyId } = data;
-
-      const options = {
-        key: razorpayKeyId || import.meta.env.VITE_RAZORPAY_KEY_ID,
-        amount: order.amount,
-        currency: order.currency,
-        name: "PetCare Premium",
-        description: `Booking for ${booking.serviceType}`,
-        order_id: order.id,
-        handler: async (response) => {
-          try {
-            await axios.post(`${import.meta.env.VITE_API_URL}/bookings/verify`, {
-              razorpay_order_id: response.razorpay_order_id,
-              razorpay_payment_id: response.razorpay_payment_id,
-              razorpay_signature: response.razorpay_signature,
-            }, config);
-          } catch (err) {
-            console.warn('Verify warning:', err?.response?.data?.message || err.message);
-          }
-          alert('Booking Successful! 🎉');
-          navigate('/dashboard');
-        },
-        theme: { color: "#FF9F43" },
-      };
-
-      const rzp = new window.Razorpay(options);
-      rzp.open();
-    } catch (error) {
-      alert(error.response?.data?.message || 'Payment Failed');
-    }
-  };
-
-  const handleDevBooking = async () => {
+  const handleCreateBooking = useCallback(async (e) => {
+    if (e) e.preventDefault();
     if (!bookingData.serviceId || !bookingData.petId || !bookingData.date || !bookingData.time) {
-      return alert('Please select a service, pet, date and time first');
+      return alert('Please complete all selection fields');
     }
+
     try {
+      setIsSubmitting(true);
       const token = user.token;
       const config = { headers: { Authorization: `Bearer ${token}` } };
+
       const payload = {
         petId: bookingData.petId,
         providerId: bookingData.serviceId.provider._id,
@@ -114,13 +70,17 @@ const Booking = () => {
         amount: bookingData.serviceId.price,
         notes: bookingData.notes
       };
+
       await axios.post(`${import.meta.env.VITE_API_URL}/bookings`, payload, config);
-      alert('Booking Created Successfully! (Dev Mode) 🎉');
+      
+      setIsSubmitting(false);
+      alert('Booking Requested Successfully! 🎉');
       navigate('/dashboard');
     } catch (error) {
+      setIsSubmitting(false);
       alert(error.response?.data?.message || 'Booking Failed');
     }
-  };
+  }, [bookingData, user.token, navigate]);
 
   const getIconForCategory = (category) => {
     switch (category) {
@@ -131,54 +91,40 @@ const Booking = () => {
     }
   };
 
-  const handleViewReviews = async (e, serviceId) => {
-    e.stopPropagation();
-    setLoadingReviews(true);
-    setReviewsModalOpen(true);
-    try {
-      const { data } = await axios.get(`${import.meta.env.VITE_API_URL}/reviews/service/${serviceId}`);
-      setSelectedServiceReviews(data);
-    } catch (error) {
-      console.error('Failed to fetch reviews', error);
-    } finally {
-      setLoadingReviews(false);
-    }
-  };
+  const selectedPet = useMemo(() => pets.find(p => p._id === bookingData.petId), [pets, bookingData.petId]);
 
-  const selectedPet = pets.find(p => p._id === bookingData.petId);
-
-  const dates = Array.from({ length: 7 }, (_, i) => {
+  const dates = useMemo(() => Array.from({ length: 7 }, (_, i) => {
     const d = new Date();
     d.setDate(d.getDate() + i);
     return d;
-  });
+  }), []);
 
-  const timeSlots = [
-    '09:00', '10:00', '11:00', '12:00', '14:00', '15:00', '16:00', '17:00'
-  ];
+  const timeSlots = ['09:00', '10:00', '11:00', '12:00', '14:00', '15:00', '16:00', '17:00'];
 
   return (
-    <div className="min-h-screen bg-[#FAF5F0] pb-32">
-      <div className="sticky top-0 z-50 bg-[#FAF5F0]/80 backdrop-blur-xl px-6 py-6 flex justify-between items-center">
-        <button 
+    <div className="min-h-screen bg-[#FAF5F0] pb-32 overflow-x-hidden transition-all duration-500 ease-in-out scroll-smooth">
+      {/* Sticky Header with optimized blur */}
+      <div className="sticky top-0 z-50 bg-[#FAF5F0]/70 backdrop-blur-2xl px-6 py-6 flex justify-between items-center border-b border-white/20">
+        <motion.button 
+          whileTap={{ scale: 0.9 }}
           onClick={() => navigate(-1)} 
-          className="w-11 h-11 rounded-full bg-white flex items-center justify-center text-gray-800 shadow-sm border border-gray-100 active:scale-95 transition"
+          className="w-11 h-11 rounded-full bg-white flex items-center justify-center text-gray-800 shadow-[0_4px_12px_rgba(0,0,0,0.03)] border border-gray-50 transition-all"
         >
           <FaChevronLeft />
-        </button>
+        </motion.button>
         <div className="text-center">
            <h1 className="text-xl font-black text-gray-900 tracking-tight">Services</h1>
-           <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Premium Pet Care</p>
+           <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] opacity-60">Elite Pet Care</p>
         </div>
         <div className="w-11" />
       </div>
 
-      <div className="px-6 mb-8">
-        <div className="bg-white/50 backdrop-blur-md p-1.5 rounded-[28px] flex gap-1 border border-white/50">
+      <div className="px-6 mb-8 mt-4">
+        <div className="bg-white/40 backdrop-blur-lg p-1.5 rounded-[30px] flex gap-1 border border-white/40 shadow-sm">
            <button 
              onClick={() => navigate('/book?type=Veterinary')}
-             className={`flex-1 h-12 rounded-[22px] text-[10px] font-black uppercase tracking-widest transition-all ${
-               categoryFilter === 'Veterinary' ? 'bg-[#FF9F43] text-white shadow-lg' : 'text-gray-400 hover:bg-white'
+             className={`flex-1 h-12 rounded-[24px] text-[10px] font-black uppercase tracking-widest transition-all duration-300 ${
+               categoryFilter === 'Veterinary' ? 'bg-gray-900 text-white shadow-xl scale-[1.02]' : 'text-gray-400 hover:bg-white/60'
              }`}
            >
              <FaUserMd className="inline-block mr-2 text-sm" />
@@ -186,288 +132,286 @@ const Booking = () => {
            </button>
            <button 
              onClick={() => navigate('/book')}
-             className={`flex-1 h-12 rounded-[22px] text-[10px] font-black uppercase tracking-widest transition-all ${
-               !categoryFilter ? 'bg-[#FF9F43] text-white shadow-lg' : 'text-gray-400 hover:bg-white'
+             className={`flex-1 h-12 rounded-[24px] text-[10px] font-black uppercase tracking-widest transition-all duration-300 ${
+               !categoryFilter ? 'bg-gray-900 text-white shadow-xl scale-[1.02]' : 'text-gray-400 hover:bg-white/60'
              }`}
            >
              <FaTools className="inline-block mr-2 text-sm" />
-             Other Services
+             Others
            </button>
         </div>
       </div>
 
-      <div className="px-6 space-y-8">
+      <div className="px-6 space-y-8 max-w-lg mx-auto">
         <section className="space-y-4">
           <div className="flex justify-between items-center px-1">
-             <h2 className="text-sm font-black text-gray-400 uppercase tracking-widest">
-               {isLoading ? 'Searching...' : `${services.length} Services Available`}
+             <h2 className="text-[10px] font-black text-gray-400 uppercase tracking-widest opacity-80">
+               {isLoading ? 'Searching...' : `${services.length} Premium Services`}
              </h2>
           </div>
 
           <div className="grid grid-cols-1 gap-4">
-            {services.length > 0 ? services.map((svc, idx) => (
-              <motion.div
-                key={svc._id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: idx * 0.05 }}
-                onClick={() => setBookingData({ ...bookingData, serviceId: svc })}
-                className={`bg-white p-5 rounded-[35px] border-2 transition-all relative overflow-hidden group cursor-pointer ${
-                  bookingData.serviceId?._id === svc._id 
-                  ? 'border-[#FF9F43] shadow-[0_15px_40px_rgba(255,159,67,0.1)]' 
-                  : 'border-gray-50 shadow-[0_10px_30px_rgba(0,0,0,0.02)]'
-                }`}
-              >
-                <div className="flex items-start gap-4">
-                   <div className={`w-14 h-14 rounded-2xl flex items-center justify-center text-2xl transition-colors ${
-                     bookingData.serviceId?._id === svc._id ? 'bg-[#FF9F43] text-white' : 'bg-[#FAF5F0] text-[#FF9F43]'
-                   }`}>
-                      {getIconForCategory(svc.category)}
-                   </div>
-                   <div className="flex-1 min-w-0">
-                      <div className="flex justify-between items-start">
-                        <h4 className="font-black text-gray-900 text-base truncate">{svc.name}</h4>
-                        <span className="font-black text-[#FF9F43] text-lg">₹{svc.price}</span>
-                      </div>
-                      <p className="text-[10px] font-bold text-gray-400 uppercase tracking-tight mt-0.5">By {svc.provider.name}</p>
-                      <p className="text-xs text-gray-400 mt-2 line-clamp-2 leading-relaxed">{svc.description}</p>
-                   </div>
+            <AnimatePresence mode="popLayout">
+              {services.length > 0 ? services.map((svc, idx) => (
+                <motion.div
+                  key={svc._id}
+                  initial={{ opacity: 0, y: 30, scale: 0.95 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  whileTap={{ scale: 0.98 }}
+                  transition={{ type: "spring", stiffness: 300, damping: 25, delay: idx * 0.05 }}
+                  onClick={() => setBookingData({ ...bookingData, serviceId: svc })}
+                  className={`bg-white p-6 rounded-[40px] border-2 transition-all duration-500 relative overflow-hidden group cursor-pointer ${
+                    bookingData.serviceId?._id === svc._id 
+                    ? 'border-gray-900 shadow-[0_25px_50px_rgba(0,0,0,0.08)]' 
+                    : 'border-transparent shadow-[0_10px_40px_rgba(0,0,0,0.02)]'
+                  }`}
+                >
+                  <div className="flex items-start gap-5">
+                    <div className={`w-16 h-16 rounded-[24px] flex items-center justify-center text-2xl transition-all duration-500 ${
+                      bookingData.serviceId?._id === svc._id ? 'bg-gray-900 text-white rotate-[5deg]' : 'bg-[#FAF5F0] text-[#FF9F43]'
+                    }`}>
+                        {getIconForCategory(svc.category)}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                        <div className="flex justify-between items-start">
+                          <h4 className="font-black text-gray-900 text-lg truncate pr-2">{svc.name}</h4>
+                          <span className="font-black text-gray-900 text-xl tracking-tighter">₹{svc.price}</span>
+                        </div>
+                        <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mt-0.5">Vet. {svc.provider.name}</p>
+                        <p className="text-xs text-gray-400 mt-3 line-clamp-2 leading-relaxed opacity-80">{svc.description}</p>
+                    </div>
+                  </div>
+                  
+                  {bookingData.serviceId?._id === svc._id && (
+                    <motion.div 
+                      layoutId="selection-paw"
+                      className="absolute top-6 right-6 w-7 h-7 bg-gray-900 rounded-full flex items-center justify-center text-white text-[10px] shadow-xl"
+                    >
+                        <FaPaw className="animate-pulse" />
+                    </motion.div>
+                  )}
+                </motion.div>
+              )) : !isLoading && (
+                <div className="py-20 text-center opacity-40">
+                  <FaSearch className="mx-auto text-4xl mb-4" />
+                  <p className="text-[10px] font-black uppercase tracking-widest">No matches found</p>
                 </div>
-                
-                <div className="mt-4 flex justify-between items-center">
-                   <div className="flex items-center gap-1.5 bg-gray-50 px-3 py-1 rounded-full">
-                      <FaStar className="text-amber-400 text-[10px]" />
-                      <span className="text-[10px] font-black text-gray-400">4.9 (24 Reviews)</span>
-                   </div>
-                   <button 
-                    onClick={(e) => handleViewReviews(e, svc._id)}
-                    className="text-[10px] font-black text-[#FF9F43] uppercase tracking-widest hover:underline"
-                   >
-                     View Details
-                   </button>
-                </div>
-
-                {bookingData.serviceId?._id === svc._id && (
-                  <motion.div 
-                    layoutId="selection-check"
-                    className="absolute top-4 right-4 w-6 h-6 bg-[#FF9F43] rounded-full flex items-center justify-center text-white text-[10px] shadow-lg"
-                  >
-                     <FaPaw />
-                  </motion.div>
-                )}
-              </motion.div>
-            )) : !isLoading && (
-              <div className="py-16 text-center">
-                 <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center mx-auto mb-4 border-2 border-dashed border-gray-100">
-                    <FaSearch className="text-gray-200 text-3xl" />
-                 </div>
-                 <p className="text-sm font-black text-gray-300 uppercase tracking-widest">No services found</p>
-              </div>
-            )}
+              )}
+            </AnimatePresence>
           </div>
         </section>
 
         <AnimatePresence>
           {bookingData.serviceId && (
             <motion.div 
-              initial={{ opacity: 0, y: 50 }}
+              initial={{ opacity: 0, y: 100 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 50 }}
-              className="bg-white rounded-[45px] p-8 shadow-[0_-20px_60px_rgba(0,0,0,0.05)] border border-gray-50 space-y-6"
+              exit={{ opacity: 0, y: 100 }}
+              transition={{ type: "spring", damping: 25, stiffness: 200 }}
+              className="bg-white rounded-[50px] p-8 shadow-[0_-25px_80px_rgba(0,0,0,0.06)] border border-gray-50 space-y-8 will-change-transform"
             >
-              <h3 className="text-xl font-black text-gray-900 tracking-tighter flex items-center gap-2">
-                 <FaCalendarPlus className="text-[#FF9F43]" /> Finish Booking
-              </h3>
+              <div className="flex items-center justify-between">
+                <h3 className="text-2xl font-black text-gray-900 tracking-tighter">Quick Checkout</h3>
+                <div className="bg-emerald-50 text-emerald-600 px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest">Safe & Secure</div>
+              </div>
 
-              <div className="space-y-4">
-                <div className="space-y-1.5 relative" ref={dropdownRef}>
-                  <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Select Your Pet</label>
+              <div className="space-y-6">
+                {/* Optimized Dropdown */}
+                <div className="space-y-2 relative" ref={dropdownRef}>
+                  <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] ml-1">Select Patient</label>
                   <button
                     type="button"
                     onClick={() => setPetDropdownOpen(!isPetDropdownOpen)}
-                    className={`w-full h-16 bg-gray-50 border-2 rounded-[22px] px-6 flex items-center justify-between transition-all outline-none ${
-                      isPetDropdownOpen ? 'border-[#FF9F43] bg-white' : 'border-gray-50'
+                    className={`w-full h-18 bg-gray-50 border-2 rounded-[28px] px-6 flex items-center justify-between transition-all duration-300 outline-none ${
+                      isPetDropdownOpen ? 'border-gray-900 bg-white ring-4 ring-gray-900/5' : 'border-transparent'
                     }`}
                   >
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-4">
                       {selectedPet ? (
                         <>
-                          <div className="w-8 h-8 rounded-full overflow-hidden border border-gray-200">
+                          <div className="w-10 h-10 rounded-2xl overflow-hidden border-2 border-white shadow-md">
                              {selectedPet.image ? (
                                <img 
                                 src={selectedPet.image.startsWith('http') ? selectedPet.image : `${import.meta.env.VITE_API_URL.replace('/api', '')}${selectedPet.image}`} 
                                 className="w-full h-full object-cover" 
                                />
                              ) : (
-                               <div className="w-full h-full flex items-center justify-center bg-gray-100 text-[#FF9F43] text-xs">
+                               <div className="w-full h-full flex items-center justify-center bg-gray-100 text-[#FF9F43] text-lg">
                                   <FaPaw />
                                </div>
                              )}
                           </div>
-                          <span className="text-sm font-bold text-gray-900">{selectedPet.name}</span>
-                          <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest bg-gray-100 px-2 py-0.5 rounded-lg">
-                             {selectedPet.species}
-                          </span>
+                          <div>
+                            <span className="block text-sm font-black text-gray-900 leading-none">{selectedPet.name}</span>
+                            <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest mt-1 block">{selectedPet.species}</span>
+                          </div>
                         </>
                       ) : (
-                        <span className="text-sm font-bold text-gray-400 italic">Choose a pet...</span>
+                        <span className="text-sm font-bold text-gray-300">Who are we caring for?</span>
                       )}
                     </div>
-                    <FaChevronDown className={`text-gray-300 transition-transform duration-300 ${isPetDropdownOpen ? 'rotate-180 text-[#FF9F43]' : ''}`} />
+                    <FaChevronDown className={`text-gray-300 transition-transform duration-500 ${isPetDropdownOpen ? 'rotate-180 text-gray-900' : ''}`} />
                   </button>
 
                   <AnimatePresence>
                     {isPetDropdownOpen && (
                       <motion.div
-                        initial={{ opacity: 0, y: -10, scale: 0.95 }}
-                        animate={{ opacity: 1, y: 5, scale: 1 }}
-                        exit={{ opacity: 0, y: -10, scale: 0.95 }}
-                        className="absolute left-0 right-0 top-full z-[100] bg-white rounded-[30px] shadow-[0_20px_50px_rgba(0,0,0,0.1)] border border-gray-50 overflow-hidden p-2"
+                        initial={{ opacity: 0, scale: 0.95, y: 10 }}
+                        animate={{ opacity: 1, scale: 1, y: 5 }}
+                        exit={{ opacity: 0, scale: 0.95, y: 10 }}
+                        className="absolute left-0 right-0 top-full z-[100] bg-white rounded-[35px] shadow-[0_30px_70px_rgba(0,0,0,0.12)] border border-gray-100 overflow-hidden p-2 backdrop-blur-xl"
                       >
-                         {pets.length > 0 ? pets.map((pet) => (
-                           <button
-                             key={pet._id}
-                             type="button"
-                             onClick={() => {
-                               setBookingData({ ...bookingData, petId: pet._id });
-                               setPetDropdownOpen(false);
-                             }}
-                             className={`w-full flex items-center justify-between p-4 rounded-[22px] transition-colors ${
-                               bookingData.petId === pet._id ? 'bg-[#FF9F43]/5' : 'hover:bg-gray-50'
-                             }`}
-                           >
-                              <div className="flex items-center gap-4 text-left">
-                                <div className="w-10 h-10 rounded-full overflow-hidden border border-gray-100 shadow-sm">
-                                   {pet.image ? (
-                                     <img 
-                                      src={pet.image.startsWith('http') ? pet.image : `${import.meta.env.VITE_API_URL.replace('/api', '')}${pet.image}`} 
-                                      className="w-full h-full object-cover" 
-                                     />
-                                   ) : (
-                                     <div className="w-full h-full flex items-center justify-center bg-gray-50 text-[#FF9F43]">
-                                        <FaPaw />
-                                     </div>
-                                   )}
-                                </div>
-                                <div>
-                                   <p className="text-sm font-black text-gray-900 leading-none">{pet.name}</p>
-                                   <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest mt-1">{pet.breed || pet.species}</p>
-                                </div>
+                         <div className="max-h-[250px] overflow-y-auto no-scrollbar py-1">
+                            {pets.length > 0 ? pets.map((pet) => (
+                              <button
+                                key={pet._id}
+                                type="button"
+                                onClick={() => {
+                                  setBookingData({ ...bookingData, petId: pet._id });
+                                  setPetDropdownOpen(false);
+                                }}
+                                className={`w-full flex items-center justify-between p-4 rounded-[26px] transition-all duration-300 mb-1 ${
+                                  bookingData.petId === pet._id ? 'bg-gray-900 text-white shadow-xl scale-[0.98]' : 'hover:bg-gray-50'
+                                }`}
+                              >
+                                  <div className="flex items-center gap-4 text-left">
+                                    <div className="w-11 h-11 rounded-2xl overflow-hidden border-2 border-white/20 shadow-sm">
+                                      <img src={pet.image ? (pet.image.startsWith('http') ? pet.image : `${import.meta.env.VITE_API_URL.replace('/api', '')}${pet.image}`) : '/placeholder-pet.png'} className="w-full h-full object-cover" />
+                                    </div>
+                                    <div>
+                                      <p className={`text-sm font-black leading-none ${bookingData.petId === pet._id ? 'text-white' : 'text-gray-900'}`}>{pet.name}</p>
+                                      <p className={`text-[9px] font-black uppercase tracking-widest mt-1.5 ${bookingData.petId === pet._id ? 'text-white/60' : 'text-gray-400'}`}>{pet.breed || pet.species}</p>
+                                    </div>
+                                  </div>
+                                  {bookingData.petId === pet._id && <FaCheck className="text-white text-xs" />}
+                              </button>
+                            )) : (
+                              <div className="p-8 text-center">
+                                <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">No pets registered</p>
+                                <button onClick={() => navigate('/dashboard?addPet=true')} className="text-[10px] font-black text-[#FF9F43] uppercase tracking-widest mt-4 underline underline-offset-4">Register Now</button>
                               </div>
-                              {bookingData.petId === pet._id && (
-                                <FaCheck className="text-[#FF9F43] text-xs" />
-                              )}
-                           </button>
-                         )) : (
-                           <div className="p-6 text-center">
-                              <p className="text-xs font-bold text-gray-400">No pets found</p>
-                              <button onClick={() => navigate('/dashboard')} className="text-[10px] font-black text-[#FF9F43] uppercase tracking-widest mt-2">Add your first pet</button>
-                           </div>
-                         )}
+                            )}
+                         </div>
                       </motion.div>
                     )}
                   </AnimatePresence>
                 </div>
 
-                <div className="space-y-1.5">
-                  <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Schedule Appointment</label>
+                {/* Optimized DateTime Trigger */}
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] ml-1">Appointment Slot</label>
                   <button
                     type="button"
                     onClick={() => setDateTimeModalOpen(true)}
-                    className="w-full h-16 bg-gray-50 border-2 border-gray-50 rounded-[22px] px-6 flex items-center justify-between transition-all hover:bg-white hover:border-[#FF9F43] group"
+                    className="w-full h-18 bg-gray-50 border-2 border-transparent rounded-[28px] px-6 flex items-center justify-between transition-all duration-300 hover:bg-white hover:border-gray-900 group"
                   >
-                    <div className="flex items-center gap-3">
-                       <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center text-[#FF9F43] shadow-sm">
+                    <div className="flex items-center gap-4">
+                       <div className="w-10 h-10 bg-white rounded-2xl flex items-center justify-center text-gray-900 shadow-sm border border-gray-50 group-hover:bg-gray-900 group-hover:text-white transition-all">
                           <FaCalendarAlt />
                        </div>
                        <div className="text-left">
-                          <p className="text-sm font-bold text-gray-900">
-                             {bookingData.date ? new Date(bookingData.date).toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' }) : 'Select Date'}
-                             {bookingData.time && ` at ${bookingData.time}`}
+                          <p className="text-sm font-black text-gray-900">
+                             {bookingData.date ? new Date(bookingData.date).toLocaleDateString('en-US', { day: 'numeric', month: 'short' }) : 'Pick a Date'}
+                             {bookingData.time && ` @ ${bookingData.time}`}
                           </p>
-                          {!bookingData.date && <p className="text-[8px] font-black text-gray-400 uppercase tracking-widest">Choose your preferred slot</p>}
+                          {!bookingData.date && <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest opacity-60">View availability</p>}
                        </div>
                     </div>
-                    <FaChevronRight className="text-gray-300 group-hover:text-[#FF9F43] group-hover:translate-x-1 transition-all" />
+                    <FaChevronRight className="text-gray-300 group-hover:text-gray-900 group-hover:translate-x-1 transition-all" />
                   </button>
                 </div>
               </div>
 
-              <div className="pt-6 border-t border-gray-50">
-                 <div className="flex justify-between items-center mb-6 px-2">
-                    <span className="text-gray-400 font-bold uppercase text-[10px] tracking-widest">Total to Pay</span>
-                    <span className="text-3xl font-black text-gray-900 tracking-tighter">₹{bookingData.serviceId.price}</span>
+              {/* Enhanced Summary & CTA */}
+              <div className="pt-8 border-t border-gray-100">
+                 <div className="flex justify-between items-center mb-8 px-2">
+                    <div>
+                      <p className="text-[9px] font-black text-gray-400 uppercase tracking-[0.3em]">Total Amount</p>
+                      <p className="text-[10px] font-bold text-emerald-500 uppercase mt-1">Free request & pay later</p>
+                    </div>
+                    <span className="text-4xl font-black text-gray-900 tracking-tighter">₹{bookingData.serviceId.price}</span>
                  </div>
                  
-                 <div className="flex gap-3 items-center">
-                   <button
-                    onClick={handlePayment}
-                    className="flex-[2] h-20 bg-[#FF9F43] rounded-[25px] text-white text-sm font-black uppercase tracking-widest shadow-[0_15px_35px_rgba(255,159,67,0.3)] active:scale-95 transition-all flex items-center justify-center gap-3 disabled:opacity-50"
-                    disabled={!bookingData.petId || !bookingData.date || !bookingData.time}
-                   >
-                     <FaCreditCard />
-                     <span>Pay & Book</span>
-                   </button>
-                   
-                   <button
-                    onClick={handleDevBooking}
-                    className="flex-1 h-20 bg-gray-50 rounded-[25px] text-[10px] font-black text-gray-400 uppercase tracking-[0.1em] hover:text-[#FF9F43] hover:bg-white hover:border-2 hover:border-[#FF9F43] transition-all flex flex-col items-center justify-center gap-1 active:scale-95 disabled:opacity-50"
-                    disabled={!bookingData.petId || !bookingData.date || !bookingData.time}
-                   >
-                     <FaTools className="opacity-40" />
-                     <span>Skip</span>
-                   </button>
-                 </div>
+                 <motion.button
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.96 }}
+                  onClick={handleCreateBooking}
+                  disabled={!bookingData.petId || !bookingData.date || !bookingData.time || isSubmitting}
+                  className="w-full h-20 bg-gray-900 rounded-[30px] text-white text-sm font-black uppercase tracking-[0.2em] shadow-[0_20px_50px_rgba(0,0,0,0.15)] disabled:opacity-30 disabled:grayscale transition-all flex items-center justify-center gap-4 overflow-hidden relative group"
+                 >
+                   <AnimatePresence mode="wait">
+                      {isSubmitting ? (
+                        <motion.div 
+                          key="loader"
+                          initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                          className="w-6 h-6 border-4 border-white/30 border-t-white rounded-full animate-spin" 
+                        />
+                      ) : (
+                        <motion.div 
+                          key="content"
+                          initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}
+                          className="flex items-center gap-4"
+                        >
+                          <FaPaperPlane className="group-hover:translate-x-2 group-hover:-translate-y-1 transition-transform" />
+                          <span>Request Booking</span>
+                        </motion.div>
+                      )}
+                   </AnimatePresence>
+                 </motion.button>
+                 <p className="text-center text-[9px] font-black text-gray-300 uppercase tracking-widest mt-6">Instant confirmation via real-time notifications</p>
               </div>
             </motion.div>
           )}
         </AnimatePresence>
       </div>
 
-      <Modal isOpen={isDateTimeModalOpen} onClose={() => setDateTimeModalOpen(false)} title="Select Slot">
-         <div className="space-y-8 py-4">
-            <div className="space-y-4">
-               <h4 className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1 flex items-center gap-2">
-                  <FaCalendarAlt className="text-[#FF9F43]" /> Select Date
+      {/* Optimized Slot Modal */}
+      <Modal isOpen={isDateTimeModalOpen} onClose={() => setDateTimeModalOpen(false)} title="Available Slots">
+         <div className="space-y-8 py-6">
+            <div className="space-y-5">
+               <h4 className="text-[10px] font-black text-gray-400 uppercase tracking-widest flex items-center gap-3">
+                  <span className="w-6 h-[1px] bg-gray-200" /> Date Selection
                </h4>
-               <div className="flex gap-3 overflow-x-auto pb-4 no-scrollbar -mx-2 px-2">
+               <div className="flex gap-4 overflow-x-auto pb-4 no-scrollbar -mx-4 px-4 snap-x">
                   {dates.map((date, i) => {
                     const isSelected = bookingData.date === date.toISOString().split('T')[0];
                     return (
-                      <button
+                      <motion.button
                         key={i}
+                        whileTap={{ scale: 0.9 }}
                         onClick={() => setBookingData({ ...bookingData, date: date.toISOString().split('T')[0] })}
-                        className={`min-w-[75px] h-20 rounded-[25px] flex flex-col items-center justify-center transition-all ${
-                          isSelected ? 'bg-[#FF9F43] text-white shadow-lg scale-105' : 'bg-gray-50 text-gray-400 hover:bg-gray-100'
+                        className={`min-w-[85px] h-24 rounded-[32px] flex flex-col items-center justify-center transition-all duration-500 snap-center ${
+                          isSelected ? 'bg-gray-900 text-white shadow-2xl scale-105' : 'bg-gray-50 text-gray-400 hover:bg-white hover:shadow-lg'
                         }`}
                       >
-                         <span className="text-[10px] font-black uppercase tracking-widest opacity-60 mb-1">
+                         <span className="text-[9px] font-black uppercase tracking-widest opacity-60 mb-2">
                             {date.toLocaleDateString('en-US', { weekday: 'short' })}
                          </span>
-                         <span className="text-lg font-black">{date.getDate()}</span>
-                      </button>
+                         <span className="text-2xl font-black tracking-tighter">{date.getDate()}</span>
+                      </motion.button>
                     );
                   })}
                </div>
             </div>
 
-            <div className="space-y-4">
-               <h4 className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1 flex items-center gap-2">
-                  <FaClock className="text-[#FF9F43]" /> Available Times
+            <div className="space-y-5">
+               <h4 className="text-[10px] font-black text-gray-400 uppercase tracking-widest flex items-center gap-3">
+                  <span className="w-6 h-[1px] bg-gray-200" /> Time Selection
                </h4>
                <div className="grid grid-cols-4 gap-3">
                   {timeSlots.map((time, i) => {
                     const isSelected = bookingData.time === time;
                     return (
-                      <button
+                      <motion.button
                         key={i}
+                        whileTap={{ scale: 0.95 }}
                         onClick={() => setBookingData({ ...bookingData, time })}
-                        className={`h-12 rounded-[18px] flex items-center justify-center text-xs font-black transition-all ${
-                          isSelected ? 'bg-[#FF9F43] text-white shadow-md' : 'bg-gray-50 text-gray-900 hover:bg-gray-100'
+                        className={`h-14 rounded-[22px] flex items-center justify-center text-[11px] font-black transition-all duration-300 ${
+                          isSelected ? 'bg-gray-900 text-white shadow-xl' : 'bg-gray-50 text-gray-900 hover:bg-white'
                         }`}
                       >
                          {time}
-                      </button>
+                      </motion.button>
                     );
                   })}
                </div>
@@ -475,41 +419,49 @@ const Booking = () => {
 
             <button
                onClick={() => setDateTimeModalOpen(false)}
-               className="w-full h-16 bg-gray-900 rounded-[25px] text-white text-sm font-black uppercase tracking-widest shadow-lg active:scale-95 transition mt-4"
+               className="w-full h-18 bg-gray-900 rounded-[28px] text-white text-[11px] font-black uppercase tracking-widest shadow-2xl active:scale-95 transition-all mt-6"
                disabled={!bookingData.date || !bookingData.time}
             >
-               Confirm Slot
+               Confirm Selection
             </button>
          </div>
       </Modal>
 
-      <Modal isOpen={isReviewsModalOpen} onClose={() => setReviewsModalOpen(false)} title="Service Feedback">
-        <div className="space-y-4">
+      {/* Styled Review Modal */}
+      <Modal isOpen={isReviewsModalOpen} onClose={() => setReviewsModalOpen(false)} title="Vet Feedback">
+        <div className="space-y-6 py-4">
           {loadingReviews ? (
-            <div className="flex justify-center py-10">
-              <div className="w-10 h-10 border-4 border-[#FF9F43] border-t-transparent rounded-full animate-spin" />
+            <div className="flex justify-center py-12">
+              <div className="w-12 h-12 border-4 border-gray-900 border-t-transparent rounded-full animate-spin" />
             </div>
           ) : selectedServiceReviews.length > 0 ? (
-            selectedServiceReviews.map(review => (
-              <div key={review._id} className="bg-gray-50 p-5 rounded-[30px] border border-gray-100">
-                <div className="flex justify-between items-start mb-2">
-                  <div>
-                    <p className="font-black text-gray-900 text-sm">{review.user?.name || 'Customer'}</p>
-                    <div className="flex text-amber-400 text-xs mt-1">
-                      {[...Array(5)].map((_, i) => (
-                        <FaStar key={i} className={i < review.rating ? 'fill-current' : 'text-gray-200'} />
-                      ))}
+            <div className="space-y-4 max-h-[400px] overflow-y-auto no-scrollbar">
+              {selectedServiceReviews.map(review => (
+                <div key={review._id} className="bg-white p-6 rounded-[35px] border border-gray-50 shadow-sm">
+                  <div className="flex justify-between items-center mb-3">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-[10px] font-black">
+                        {review.user?.name?.charAt(0) || 'C'}
+                      </div>
+                      <div>
+                        <p className="font-black text-gray-900 text-[11px]">{review.user?.name || 'Customer'}</p>
+                        <div className="flex text-amber-400 text-[8px] mt-0.5">
+                          {[...Array(5)].map((_, i) => (
+                            <FaStar key={i} className={i < review.rating ? 'fill-current' : 'text-gray-200'} />
+                          ))}
+                        </div>
+                      </div>
                     </div>
+                    <span className="text-[8px] font-bold text-gray-300 uppercase">{new Date(review.createdAt).toLocaleDateString()}</span>
                   </div>
-                  <span className="text-[10px] font-bold text-gray-400 uppercase">{new Date(review.createdAt).toLocaleDateString()}</span>
+                  <p className="text-[11px] text-gray-400 italic leading-relaxed">"{review.comment}"</p>
                 </div>
-                <p className="text-xs text-gray-400 italic leading-relaxed">"{review.comment}"</p>
-              </div>
-            ))
+              ))}
+            </div>
           ) : (
-            <div className="py-12 text-center">
-              <FaStar className="mx-auto text-3xl text-gray-100 mb-3" />
-              <p className="text-xs font-black text-gray-400 uppercase tracking-widest">No reviews yet</p>
+            <div className="py-20 text-center opacity-30">
+              <FaStar className="mx-auto text-4xl mb-4" />
+              <p className="text-[10px] font-black uppercase tracking-widest">No reviews yet</p>
             </div>
           )}
         </div>

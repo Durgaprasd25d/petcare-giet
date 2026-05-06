@@ -1,8 +1,8 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-import { FaPaw, FaChevronLeft, FaHeart, FaMapMarkerAlt, FaPhoneAlt, FaCommentAlt, FaSearch, FaBell, FaDog, FaCat, FaKiwiBird, FaHome, FaCompass, FaCalendarAlt, FaUser } from 'react-icons/fa';
+import { FaPaw, FaChevronLeft, FaHeart, FaMapMarkerAlt, FaPhoneAlt, FaCommentAlt, FaSearch, FaBell, FaDog, FaCat, FaKiwiBird, FaHome, FaCompass, FaCalendarAlt, FaUser, FaArrowRight } from 'react-icons/fa';
 
 const Home = () => {
   const [step, setStep] = useState(0);
@@ -15,169 +15,141 @@ const Home = () => {
     }
   }, [user, navigate]);
 
-  const onboardingSteps = [
+  const onboardingSteps = useMemo(() => [
     {
-      title: "Meet Your New Best Friend",
-      sub: "Thousands of adorable pets are waiting for you.",
+      title: "Elite Pet Care Unified",
+      sub: "Premium health management for your furry companions.",
       image: "/assets/onboarding/cat_peeking.png",
-      tag: "Welcome to Payven",
+      tag: "Intelligence",
       translateY: "translate-y-[28%] sm:translate-y-[20%]",
       containerClass: "w-[400px] h-[400px]",
-      marginBottom: "mb-[22px]"
+      marginBottom: "mb-[22px]",
+      color: "#FF9F43"
     },
     {
-      title: "Find Your Perfect Match",
-      sub: "Personalized recommendations based on your lifestyle.",
+      title: "Direct Professional Access",
+      sub: "Instant bookings with top-tier verified veterinarians.",
       image: "/assets/onboarding/dog_peeking.png",
-      tag: "Discovery",
+      tag: "Precision",
       translateY: "translate-y-[28%] sm:translate-y-[20%]",
       containerClass: "w-[400px] h-[400px]",
-      marginBottom: "mb-[14px]"
+      marginBottom: "mb-[14px]",
+      color: "#1A1A1A"
     },
     {
-      title: "Care That Lasts Forever",
-      sub: "Health records and expert advice at your fingertips.",
+      title: "Streamlined Experience",
+      sub: "Focus on care, not paperwork. Simple & secure.",
       image: "/assets/onboarding/rabbit_peeking.png",
-      tag: "Premium Care",
+      tag: "Excellence",
       translateY: "translate-y-[15%] sm:translate-y-[10%]",
       containerClass: "w-[450px] h-[450px]",
-      marginBottom: "mb-[-122px]"
+      marginBottom: "mb-[-122px]",
+      color: "#FF9F43"
     }
-  ];
+  ], []);
 
-  const nextStep = () => {
+  const nextStep = useCallback(() => {
     if (step < onboardingSteps.length - 1) {
       setStep(step + 1);
     } else {
       navigate('/register');
     }
-  };
-
-  const prevStep = () => {
-    if (step > 0) setStep(step - 1);
-  };
-
-  const goToStep = (index) => {
-    setStep(index);
-  };
+  }, [step, onboardingSteps.length, navigate]);
 
   const current = onboardingSteps[step];
 
   return (
-    <div className="fixed inset-0 z-[100] bg-[#FAF5F0] overflow-hidden font-sans select-none flex flex-col h-[100dvh]">
+    <div className="fixed inset-0 z-[100] bg-[#FAF5F0] overflow-hidden font-sans select-none flex flex-col h-[100dvh] transition-colors duration-1000">
       <AnimatePresence mode="wait">
         <motion.div
           key={`step-${step}`}
-          initial={{ opacity: 0, x: 50 }}
+          initial={{ opacity: 0, x: 100 }}
           animate={{ opacity: 1, x: 0 }}
-          exit={{ opacity: 0, x: -50 }}
-          transition={{ duration: 0.4, ease: "easeInOut" }}
-          className="flex-1 flex flex-col relative h-full"
+          exit={{ opacity: 0, x: -100 }}
+          transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+          className="flex-1 flex flex-col relative h-full gpu-accelerated"
         >
           {/* Background Watermark Paw */}
-          <div className="absolute right-[-20%] top-[10%] opacity-[0.03] rotate-12 pointer-events-none">
-            <FaPaw className="text-[500px] text-[#1A1A1A]" />
+          <div className="absolute right-[-20%] top-[10%] opacity-[0.02] rotate-12 pointer-events-none transition-transform duration-1000">
+            <FaPaw className="text-[600px] text-gray-900" />
           </div>
 
           {/* Top Content */}
-          <div className="px-8 pt-10 sm:pt-16 relative z-10 flex-shrink-0">
+          <div className="px-10 pt-16 sm:pt-24 relative z-10 flex-shrink-0">
             <motion.div
-              initial={{ y: 20, opacity: 0 }}
+              initial={{ y: 30, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
-              transition={{ delay: 0.2 }}
+              transition={{ delay: 0.3, duration: 0.8 }}
             >
-              <span className="text-[#FF9F43] font-black uppercase tracking-[0.2em] text-[10px] block mb-2">
+              <span className="text-[#FF9F43] font-black uppercase tracking-[0.4em] text-[10px] block mb-4 opacity-60">
                 {current.tag}
               </span>
-              <h1 className="text-5xl sm:text-7xl font-black leading-[0.9] text-[#1A1A1A] tracking-tighter">
+              <h1 className="text-6xl sm:text-8xl font-black leading-[0.85] text-gray-900 tracking-tighter">
                 {current.title.split(' ').slice(0, 2).join(' ')} <br />
-                <span className="text-[#FF9F43]">{current.title.split(' ').slice(2, 4).join(' ')}</span> <br />
-                {current.title.split(' ').slice(4).join(' ')}
+                <span className="text-[#FF9F43]">{current.title.split(' ').slice(2, 3).join(' ')}</span> <br />
+                {current.title.split(' ').slice(3).join(' ')}
               </h1>
-              <p className="text-gray-400 text-xs sm:text-sm mt-3 font-medium max-w-[200px] leading-relaxed">
+              <p className="text-gray-400 text-sm sm:text-base mt-6 font-medium max-w-[240px] leading-relaxed opacity-80">
                 {current.sub}
               </p>
             </motion.div>
           </div>
 
-          {/* Middle Section with Dynamic Image Size & Margin */}
+          {/* Middle Section with Hardware Acceleration */}
           <div className="flex-1 relative min-h-0">
             <motion.div
-              initial={{ scale: 0.7, opacity: 0, y: 50 }}
+              initial={{ scale: 0.8, opacity: 0, y: 100 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
-              transition={{ type: "spring", damping: 20, stiffness: 80 }}
+              transition={{ type: "spring", damping: 25, stiffness: 100, delay: 0.2 }}
               className="absolute inset-0 flex items-end justify-center z-50 pointer-events-none"
             >
-              <div className={`relative ${current.containerClass} flex items-end justify-center ${current.marginBottom}`}>
+              <div className={`relative ${current.containerClass} flex items-end justify-center ${current.marginBottom} will-change-transform`}>
                 <img
                   src={current.image}
-                  className={`w-full h-full object-contain transform ${current.translateY}`}
-                  alt="Pet Peeking"
+                  className={`w-full h-full object-contain transform transition-transform duration-1000 ${current.translateY}`}
+                  alt="Onboarding"
+                  loading="eager"
                 />
               </div>
             </motion.div>
           </div>
 
-          {/* Bottom Panel */}
-          <div className="bg-white rounded-t-[50px] px-8 pt-6 pb-8 sm:pt-10 sm:pb-12 shadow-[0_-20px_60px_rgba(0,0,0,0.12)] relative z-40 flex-shrink-0">
-            <div className="flex flex-col gap-5 sm:gap-8">
-              <h2 className="text-lg sm:text-2xl font-black text-gray-900 text-center leading-tight">
-                {step === 2 ? "Ready to start your journey?" : "Find your perfect companion"}
-              </h2>
-
+          {/* Bottom Panel - Native App Feel */}
+          <div className="bg-white rounded-t-[60px] px-10 pt-10 pb-12 sm:pb-16 shadow-[0_-30px_80px_rgba(0,0,0,0.08)] relative z-40 flex-shrink-0 border-t border-gray-50">
+            <div className="flex flex-col gap-10">
               <div className="flex items-center justify-between">
-                <div className="flex gap-2.5">
+                <div className="flex gap-3">
                   {onboardingSteps.map((_, index) => (
                     <button
                       key={index}
-                      onClick={() => goToStep(index)}
-                      className={`h-2 rounded-full transition-all duration-300 ${step === index ? 'w-10 bg-black' : 'w-2 bg-gray-200'
+                      onClick={() => setStep(index)}
+                      className={`h-1.5 rounded-full transition-all duration-700 ${step === index ? 'w-12 bg-gray-900' : 'w-1.5 bg-gray-100'
                         }`}
                     />
                   ))}
                 </div>
 
-                <button
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.9 }}
                   onClick={nextStep}
-                  className="group flex items-center gap-3 py-3 px-5 sm:py-5 sm:px-8 rounded-full font-black text-white bg-[#FF9F43] shadow-[0_10px_30px_rgba(255,159,67,0.4)] active:scale-95 transition-all"
+                  className="group flex items-center gap-4 py-4 px-6 sm:py-6 sm:px-10 rounded-[30px] font-black text-white bg-gray-900 shadow-2xl active:scale-95 transition-all"
                 >
-                  <div className="w-9 h-9 sm:w-12 sm:h-12 bg-black/10 rounded-full flex items-center justify-center">
-                    <FaPaw className="text-lg sm:text-2xl" />
-                  </div>
-                  <span className="text-sm sm:text-xl pr-1 uppercase tracking-wide">
-                    {step === 2 ? "Let's Go" : "Next"}
+                  <span className="text-sm sm:text-lg uppercase tracking-widest pl-2">
+                    {step === 2 ? "Get Started" : "Continue"}
                   </span>
-                </button>
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 bg-white/10 rounded-2xl flex items-center justify-center group-hover:bg-[#FF9F43] transition-colors">
+                    <FaArrowRight className="text-sm sm:text-lg" />
+                  </div>
+                </motion.button>
               </div>
+              <p className="text-center text-[9px] font-black text-gray-300 uppercase tracking-[0.3em]">Payven Executive Platform v2.0</p>
             </div>
           </div>
         </motion.div>
       </AnimatePresence>
-
     </div>
   );
 };
-
-const Pill = ({ label, sub, color }) => (
-  <div className={`p-2 sm:p-2.5 rounded-xl sm:rounded-2xl ${color} flex flex-col items-center justify-center border border-white/20`}>
-    <span className="text-[10px] sm:text-xs font-black">{label}</span>
-    <span className="text-[7px] sm:text-[8px] uppercase font-bold opacity-60 mt-0.5">{sub}</span>
-  </div>
-);
-
-const CategoryItem = ({ icon, label, active }) => (
-  <div className={`flex flex-col items-center gap-1.5 sm:gap-2 group cursor-pointer`}>
-    <div className={`w-12 h-16 sm:w-14 sm:h-20 rounded-full flex items-center justify-center text-lg sm:text-xl transition-all ${active ? 'bg-black text-white shadow-lg' : 'bg-white text-gray-400 border border-gray-100 shadow-sm'}`}>
-      {icon}
-    </div>
-    <span className={`text-[8px] sm:text-[10px] font-black ${active ? 'text-black' : 'text-gray-400'}`}>{label}</span>
-  </div>
-);
-
-const NavIcon = ({ icon, active }) => (
-  <div className={`text-lg sm:text-xl cursor-pointer p-1.5 sm:p-2 transition-all ${active ? 'text-amber-500 scale-110' : 'text-gray-300 hover:text-gray-500'}`}>
-    {icon}
-  </div>
-);
 
 export default Home;
