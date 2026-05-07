@@ -180,6 +180,38 @@ const Dashboard = ({ staffView }) => {
     dispatch(updateBookingStatus({ id, status }));
   }, [dispatch]);
 
+  const handleMarkAllRead = useCallback(() => {
+    dispatch(markAllRead());
+  }, [dispatch]);
+
+  const openEditService = useCallback(() => {
+    if (selectedService) {
+      setIsEditingService(true);
+      setServiceForm({
+        name: selectedService.name,
+        category: selectedService.category,
+        description: selectedService.description,
+        price: selectedService.price,
+        duration: selectedService.duration,
+        image: selectedService.image || ''
+      });
+      setServiceDetailOpen(false);
+      setServiceModalOpen(true);
+    }
+  }, [selectedService]);
+
+  const handleDeleteService = useCallback(async () => {
+    if (selectedService && window.confirm('Are you sure you want to delete this service?')) {
+      try {
+        await dispatch(deleteService(selectedService._id)).unwrap();
+        setServiceDetailOpen(false);
+        setSelectedService(null);
+      } catch (error) {
+        alert('Failed to delete service');
+      }
+    }
+  }, [dispatch, selectedService]);
+
   const filteredPets = useMemo(() => pets.filter(pet => {
     if (!pet || !pet.name) return false;
     return pet.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
