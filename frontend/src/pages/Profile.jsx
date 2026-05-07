@@ -157,7 +157,6 @@ const ProfileItem = ({ icon, label, value }) => (
       <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">{label}</p>
       <p className="text-[15px] font-black text-gray-900 mt-1 tracking-tight">{value}</p>
     </div>
-    <FaChevronRight className="text-gray-200 group-hover:text-[#FF9F43] group-hover:translate-x-1 transition-all" />
   </div>
 );
 
