@@ -90,13 +90,19 @@ exports.getPendingApprovals = async (req, res) => {
     }
 };
 
-// Approve user (Admin only)
 exports.approveUser = async (req, res) => {
     try {
         const user = await User.findById(req.params.id);
         if (user) {
             user.isApproved = true;
             await user.save();
+            
+            // Emit real-time approval event
+            const io = req.app.get('io');
+            if (io) {
+                io.to(user._id.toString()).emit('accountApproved', { isApproved: true });
+            }
+
             res.json({ message: 'User approved successfully' });
         } else {
             res.status(404).json({ message: 'User not found' });

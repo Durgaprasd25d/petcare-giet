@@ -89,6 +89,12 @@ export const authSlice = createSlice({
     resetOTPState: (state) => {
       state.requireOTP = false;
       state.registeredEmail = '';
+    },
+    updateApprovalStatus: (state, action) => {
+      if (state.user) {
+        state.user.isApproved = action.payload;
+        localStorage.setItem('user', JSON.stringify(state.user));
+      }
     }
   },
   extraReducers: (builder) => {
@@ -145,5 +151,5 @@ export const authSlice = createSlice({
   },
 });
 
-export const { reset, resetOTPState } = authSlice.actions;
+export const { reset, resetOTPState, updateApprovalStatus } = authSlice.actions;
 export default authSlice.reducer;

@@ -21,6 +21,7 @@ import socket from './socket';
 import { addNotification, getNotifications } from './redux/slices/notificationSlice';
 
 import { addBooking, updateBooking } from './redux/slices/bookingSlice';
+import { updateApprovalStatus } from './redux/slices/authSlice';
 
 function AppContent() {
   const location = useLocation();
@@ -65,6 +66,12 @@ function AppContent() {
         dispatch(addBooking(booking));
       });
 
+      // Listen for account approval
+      socket.on('accountApproved', (data) => {
+        console.log('✅ Account approved in real-time:', data);
+        dispatch(updateApprovalStatus(true));
+      });
+
       socket.on('disconnect', () => {
         console.log('❌ Socket disconnected');
       });
@@ -76,6 +83,7 @@ function AppContent() {
         socket.off('notification');
         socket.off('bookingUpdated');
         socket.off('bookingCreated');
+        socket.off('accountApproved');
         socket.off('connect');
         socket.off('disconnect');
         socket.disconnect();
