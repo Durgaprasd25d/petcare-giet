@@ -44,6 +44,16 @@ const AdminUsers = () => {
     }
   };
 
+  const handleApprove = async (id) => {
+    try {
+      const { data } = await axios.put(`${import.meta.env.VITE_API_URL}/users/${id}/approve`, {}, config);
+      setUsers(users.map(u => u._id === id ? { ...u, isApproved: true } : u));
+      toast.success(data.message || 'User approved successfully');
+    } catch (error) {
+      toast.error(error.response?.data?.message || 'Failed to approve user');
+    }
+  };
+
   const handleDelete = async (id) => {
     if (!window.confirm('Are you sure you want to permanently delete this user?')) return;
     try {
@@ -171,7 +181,16 @@ const AdminUsers = () => {
                 </div>
 
                 <div className="flex gap-3">
-                  {u.role !== 'Admin' && (
+                  {!u.isApproved && u.role !== 'Admin' && (
+                    <motion.button
+                      whileTap={{ scale: 0.95 }}
+                      onClick={() => handleApprove(u._id)}
+                      className="flex-1 h-[60px] rounded-[18px] text-[10px] font-black uppercase tracking-widest transition-all flex items-center justify-center gap-2 bg-blue-50 text-blue-600 hover:bg-blue-100"
+                    >
+                      <FaCheckCircle /> Approve
+                    </motion.button>
+                  )}
+                  {u.isApproved && u.role !== 'Admin' && (
                     <motion.button
                       whileTap={{ scale: 0.95 }}
                       onClick={() => handleToggleSuspend(u._id, u.isSuspended)}
