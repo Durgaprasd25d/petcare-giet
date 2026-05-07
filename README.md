@@ -1,6 +1,6 @@
 <div align="center">
-  <img src="./frontend/public/pawlio_premium_logo.png" alt="Pawlio Logo" width="200" />
-  <h1>🐾 Pawlio - Enterprise Pet Care Platform</h1>
+  <img src="./frontend/public/pawlio_premium_logo.png" alt="Payven Logo" width="200" />
+  <h1>🐾 Payven - Enterprise Pet Care Platform</h1>
   <p>A comprehensive, real-time veterinary telemedicine and pet care management platform.</p>
 </div>
 
@@ -8,7 +8,7 @@
 
 ## 📖 Overview
 
-Pawlio is a full-stack, enterprise-grade SaaS application designed to bridge the gap between Pet Owners and Veterinary/Pet Care Professionals. It features a completely custom **WebRTC global telemedicine infrastructure**, an **AI-powered Health Assistant**, and a highly robust **Real-Time WebSocket** engine.
+Payven is a full-stack, enterprise-grade SaaS application designed to bridge the gap between Pet Owners and Veterinary/Pet Care Professionals. It features a completely custom **WebRTC global telemedicine infrastructure**, an **AI-powered Health Assistant**, and a highly robust **Real-Time WebSocket** engine.
 
 ## 🛠 Tech Stack
 
@@ -58,7 +58,7 @@ The platform employs a strict Role-Based Access Control system. Each role experi
 ## 🚀 Core Features & Technical Highlights
 
 ### 1. Global Telemedicine & WebRTC Architecture
-Unlike standard single-page video chats, Pawlio's telemedicine operates globally across the entire React application via a master `CallContext`.
+Unlike standard single-page video chats, Payven's telemedicine operates globally across the entire React application via a master `CallContext`.
 * **App-Wide Ringing:** Incoming WebRTC signaling alerts the user on *any* page of the application, rendering a high-priority Incoming Call Modal (`z-index: 9999`).
 * **F5 / Page Reload Auto-Recovery:** A highly advanced, custom recovery protocol. If a user manually reloads the browser mid-call, the active session is serialized to `sessionStorage`. Upon mount, the app automatically re-acquires `getUserMedia()` permissions, emits a `reconnect-call-offer`, and seamlessly triggers an ICE Restart on the partner's machine without dropping the call.
 * **Real-Time Presence Tracking:** WebSockets map every connected user. Users see live Green/Grey dots next to their consultation partners. Calls to offline users are strictly blocked at the UI level.
