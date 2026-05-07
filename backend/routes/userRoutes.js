@@ -8,10 +8,12 @@ const {
     getAdminStats, 
     updateUserProfile,
     toggleSuspension,
-    getAdminServices
+    getAdminServices,
+    getVets
 } = require('../controllers/userController');
 const { protect, authorize } = require('../middlewares/authMiddleware');
 
+router.get('/vets', protect, getVets);
 router.get('/stats', protect, authorize('Admin'), getAdminStats);
 router.get('/', protect, authorize('Admin'), getUsers);
 router.get('/pending', protect, authorize('Admin'), getPendingApprovals);

@@ -7,6 +7,7 @@ import reviewReducer from './slices/reviewSlice';
 import notificationReducer from './slices/notificationSlice';
 import wellnessReducer from './slices/wellnessSlice';
 import expenseReducer from './slices/expenseSlice';
+import postReducer from './slices/postSlice';
 
 export const store = configureStore({
   reducer: {
@@ -18,5 +19,6 @@ export const store = configureStore({
     notifications: notificationReducer,
     wellness: wellnessReducer,
     expenses: expenseReducer,
+    posts: postReducer,
   },
 });

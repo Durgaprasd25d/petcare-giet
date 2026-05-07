@@ -3,6 +3,17 @@ const Booking = require('../models/Booking');
 const Pet = require('../models/Pet');
 const Service = require('../models/Service');
 
+// Get all approved veterinarians (Available to all users)
+exports.getVets = async (req, res) => {
+    try {
+        const vets = await User.find({ role: 'Veterinarian', isApproved: true })
+                               .select('name image email role isApproved');
+        res.json(vets);
+    } catch (error) {
+        res.status(500).json({ message: 'Failed to fetch veterinarians' });
+    }
+};
+
 // Get admin dashboard stats (Admin only)
 exports.getAdminStats = async (req, res) => {
     try {

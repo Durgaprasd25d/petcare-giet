@@ -1,6 +1,6 @@
 import { Link, useLocation } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-import { FaHome, FaUser, FaCalendarAlt, FaClipboardList, FaPlus, FaStethoscope, FaTools, FaShieldAlt, FaWallet, FaUsers, FaBoxOpen } from 'react-icons/fa';
+import { FaHome, FaUser, FaCalendarAlt, FaClipboardList, FaPlus, FaStethoscope, FaTools, FaShieldAlt, FaWallet, FaUsers, FaBoxOpen, FaCommentDots } from 'react-icons/fa';
 import { motion } from 'framer-motion';
 
 const BottomNav = () => {
@@ -16,7 +16,7 @@ const BottomNav = () => {
   const ownerLinks = [
     { path: '/dashboard', icon: <FaHome />, label: 'Home' },
     { path: '/book', icon: <FaClipboardList />, label: 'Services' },
-    { path: '/dashboard?addPet=true', icon: <FaPlus />, label: 'Add' },
+    { path: '/community', icon: <FaCommentDots />, label: 'Feed' },
     { path: '/finance', icon: <FaWallet />, label: 'Wallet' },
     { path: '/profile', icon: <FaUser />, label: 'Me' },
   ];

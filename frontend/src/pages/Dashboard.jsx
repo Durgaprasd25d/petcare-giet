@@ -6,7 +6,7 @@ import { getMyBookings, getProviderBookings, updateBookingStatus } from '../redu
 import { getProviderServices, createService, updateService, deleteService } from '../redux/slices/serviceSlice';
 import { getNotifications, markAllRead, markSingleRead } from '../redux/slices/notificationSlice';
 import axios from 'axios';
-import { FaPlus, FaDog, FaStethoscope, FaCalendarAlt, FaCat, FaPaw, FaLock, FaStar, FaHistory, FaTools, FaCheck, FaTimes, FaClipboardList, FaUpload, FaSearch, FaBell, FaChevronRight, FaUserAlt, FaMapMarkerAlt, FaClock, FaFilter } from 'react-icons/fa';
+import { FaPlus, FaDog, FaStethoscope, FaCalendarAlt, FaCat, FaPaw, FaLock, FaStar, FaHistory, FaTools, FaCheck, FaTimes, FaClipboardList, FaUpload, FaSearch, FaBell, FaChevronRight, FaUserAlt, FaMapMarkerAlt, FaClock, FaFilter, FaRobot, FaVideo } from 'react-icons/fa';
 import Modal from '../components/Modal';
 import AdminDashboard from '../components/AdminDashboard';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -275,6 +275,41 @@ const Dashboard = ({ staffView }) => {
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="flex-1 bg-transparent border-none outline-none text-sm font-bold text-gray-900 placeholder:text-gray-300"
               />
+            </div>
+            <div className="mt-6 grid grid-cols-2 gap-4">
+              <motion.div 
+                whileTap={{ scale: 0.98 }}
+                onClick={() => navigate('/ai-assistant')}
+                className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-[30px] p-5 flex flex-col justify-between shadow-xl shadow-gray-900/10 cursor-pointer group border border-gray-700 min-h-[150px]"
+              >
+                <div className="flex justify-between items-start">
+                  <div className="w-12 h-12 bg-white/10 rounded-[18px] flex items-center justify-center text-[#FF9F43] backdrop-blur-md group-hover:scale-110 transition-transform duration-500 shadow-inner">
+                    <FaRobot size={22} />
+                  </div>
+                  <span className="bg-gradient-to-r from-[#FF9F43] to-[#f39132] text-white text-[8px] font-black uppercase tracking-widest px-2 py-1 rounded-full shadow-sm">AI Beta</span>
+                </div>
+                <div>
+                  <h3 className="text-white text-base font-black tracking-tight leading-none mt-4">AI Health</h3>
+                  <p className="text-gray-400 text-[10px] font-medium mt-1 leading-relaxed">Check symptoms instantly</p>
+                </div>
+              </motion.div>
+
+              <motion.div 
+                whileTap={{ scale: 0.98 }}
+                onClick={() => navigate('/telemedicine')}
+                className="bg-gradient-to-br from-indigo-500 to-blue-600 rounded-[30px] p-5 flex flex-col justify-between shadow-xl shadow-blue-500/20 cursor-pointer group border border-blue-400 min-h-[150px]"
+              >
+                <div className="flex justify-between items-start">
+                  <div className="w-12 h-12 bg-white/20 rounded-[18px] flex items-center justify-center text-white backdrop-blur-md group-hover:scale-110 transition-transform duration-500 shadow-inner">
+                    <FaVideo size={22} />
+                  </div>
+                  <span className="bg-white/20 text-white text-[8px] font-black uppercase tracking-widest px-2 py-1 rounded-full shadow-sm">Live</span>
+                </div>
+                <div>
+                  <h3 className="text-white text-base font-black tracking-tight leading-none mt-4">Telemedicine</h3>
+                  <p className="text-blue-100 text-[10px] font-medium mt-1 leading-relaxed">Virtual vet consultation</p>
+                </div>
+              </motion.div>
             </div>
           </section>
 
@@ -554,7 +589,7 @@ const Dashboard = ({ staffView }) => {
     return (
       <div className="space-y-10 pb-24">
         <section className="grid grid-cols-2 gap-4">
-          <motion.div whileHover={{ y: -5 }} className="bg-gray-900 p-8 rounded-[45px] relative overflow-hidden group shadow-2xl shadow-black/20">
+          <motion.div whileHover={{ y: -5 }} onClick={() => navigate('/bookings')} className="bg-gray-900 p-8 rounded-[45px] relative overflow-hidden group shadow-2xl shadow-black/20 cursor-pointer">
             <div className="relative z-10">
               <span className="text-white/40 font-black text-[9px] uppercase tracking-[0.3em]">Operational</span>
               <h3 className="text-white text-4xl font-black mt-3 tracking-tighter">{bookings.filter(b => b.status === 'Accepted').length}</h3>
@@ -562,14 +597,14 @@ const Dashboard = ({ staffView }) => {
             </div>
             <FaCalendarAlt className="absolute right-[-15%] bottom-[-15%] text-[100px] text-white opacity-[0.05] rotate-12 group-hover:rotate-0 transition-transform duration-700" />
           </motion.div>
-          <motion.div whileHover={{ y: -5 }} className="bg-white p-8 rounded-[45px] border border-gray-100 shadow-sm group">
+          <motion.div whileHover={{ y: -5 }} onClick={() => navigate('/services')} className="bg-white p-8 rounded-[45px] border border-gray-100 shadow-sm group cursor-pointer">
             <span className="text-gray-400 font-black text-[9px] uppercase tracking-[0.3em]">Revenue Stream</span>
             <h3 className="text-gray-900 text-4xl font-black mt-3 tracking-tighter">{myServices.length}</h3>
             <p className="text-[#FF9F43] text-[10px] font-black mt-3 uppercase tracking-widest">Active Services</p>
           </motion.div>
         </section>
 
-        <motion.section initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="bg-amber-50 p-7 rounded-[40px] border border-amber-100 flex items-center justify-between shadow-inner">
+        <motion.section initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} onClick={() => navigate('/bookings')} className="bg-amber-50 p-7 rounded-[40px] border border-amber-100 flex items-center justify-between shadow-inner cursor-pointer">
           <div className="flex items-center gap-5">
             <div className="w-14 h-14 bg-white rounded-[22px] flex items-center justify-center text-amber-500 shadow-md">
               <FaHistory className="animate-pulse" />
@@ -581,12 +616,33 @@ const Dashboard = ({ staffView }) => {
           </div>
           <motion.button
             whileTap={{ scale: 0.9 }}
-            onClick={() => navigate('?view=bookings')}
-            className="w-10 h-10 rounded-full bg-white flex items-center justify-center text-amber-600 shadow-sm active:shadow-none transition-all"
+            className="w-10 h-10 rounded-full bg-white flex items-center justify-center text-amber-600 shadow-sm active:shadow-none transition-all pointer-events-none"
           >
             <FaChevronRight size={12} />
           </motion.button>
         </motion.section>
+
+        {user.role === 'Veterinarian' && (
+          <motion.section 
+            initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={() => navigate('/telemedicine')}
+            className="bg-gradient-to-br from-indigo-500 to-blue-600 p-7 rounded-[40px] flex items-center justify-between shadow-xl shadow-blue-500/20 cursor-pointer group"
+          >
+            <div className="flex items-center gap-5">
+              <div className="w-14 h-14 bg-white/20 rounded-[22px] flex items-center justify-center text-white shadow-inner backdrop-blur-md">
+                <FaVideo size={24} />
+              </div>
+              <div>
+                <h4 className="font-black text-white text-base tracking-tight">Telemedicine</h4>
+                <p className="text-[10px] font-bold text-blue-100 uppercase tracking-widest mt-1">Virtual Consultations</p>
+              </div>
+            </div>
+            <motion.button className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white shadow-sm pointer-events-none group-hover:bg-white group-hover:text-indigo-600 transition-colors">
+              <FaChevronRight size={12} />
+            </motion.button>
+          </motion.section>
+        )}
 
         <section className="bg-white/40 border-2 border-dashed border-gray-200 p-10 rounded-[50px] text-center backdrop-blur-sm">
           <div className="w-20 h-20 bg-white rounded-[28px] flex items-center justify-center mx-auto mb-6 shadow-xl border border-gray-50">

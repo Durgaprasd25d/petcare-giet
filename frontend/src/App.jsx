@@ -1,4 +1,5 @@
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+import { CallProvider } from './context/CallContext';
 import BottomNav from './components/BottomNav';
 import Home from './pages/Home';
 import Login from './pages/Login';
@@ -11,6 +12,9 @@ import WellnessRoadmap from './pages/WellnessRoadmap';
 import AdminUsers from './pages/AdminUsers';
 import AdminServices from './pages/AdminServices';
 import FinanceHub from './pages/FinanceHub';
+import CommunityFeed from './pages/CommunityFeed';
+import AIHealthAssistant from './pages/AIHealthAssistant';
+import Telemedicine from './pages/Telemedicine';
 import { Toaster } from 'react-hot-toast';
 import { FaMobileAlt, FaPaw } from 'react-icons/fa';
 import { motion } from 'framer-motion';
@@ -147,6 +151,9 @@ function AppContent() {
           <Route path="/finance" element={<FinanceHub />} />
           <Route path="/admin/users" element={<AdminUsers />} />
           <Route path="/admin/services" element={<AdminServices />} />
+          <Route path="/community" element={<CommunityFeed />} />
+          <Route path="/ai-assistant" element={<AIHealthAssistant />} />
+          <Route path="/telemedicine" element={<Telemedicine />} />
         </Routes>
       </main>
       {!shouldHideNav && <BottomNav />}
@@ -157,7 +164,9 @@ function AppContent() {
 function App() {
   return (
     <Router>
-      <AppContent />
+      <CallProvider>
+        <AppContent />
+      </CallProvider>
     </Router>
   );
 }
